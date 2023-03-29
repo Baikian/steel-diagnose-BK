@@ -1,9 +1,11 @@
 <template>
   <el-card class="box-card">
     <template #header>
-      <div class="card-header">
-        <span>What-If View</span>
+      <div class="title-background">
+      <div class="title-text">
+        <span>ComparativeView</span>
       </div>
+    </div>
     </template>
     <div id="ComparativeView">
       <div id = 'buttonDiv'>
@@ -34,28 +36,28 @@ onMounted(() => {
   }, 500);
 });
 
-// let renderInstance = null;
-// onMounted(() => {
-//   const ele = document.getElementById("ComparativeView");
-//   const viewWidth = ele.offsetWidth;
-//   const viewHeight = ele.offsetHeight;
-//   renderInstance = new ComparativeView(
-//     { width: viewWidth, height: viewHeight },
-//     ele
-//   );
+let renderInstance = null;
+onMounted(() => {
+  const ele = document.getElementById("ComparativeView");
+  const viewWidth = ele.offsetWidth;
+  const viewHeight = ele.offsetHeight;
+  renderInstance = new ComparativeView(
+    { width: viewWidth, height: viewHeight },
+    ele
+  );
 
 //   //鼠标悬停提示框
 //   // const eleParent = document.getElementById('ComparativeView');
 //   // const tooltip = new TooltipClass({ width: 200, height: 200 }, eleParent, 'global-tooltip');
 //   // getTooltipInstance(tooltip);
-// });
+});
 
-// // 这里开始绘制对比视图
-// watch(comparativeData, () => {
-//   //const raw = toRaw(comparativeData.value);
-//   renderInstance.joinData(comparativeData.value);
-//   renderInstance.render();
-// });
+// 这里开始绘制对比视图
+watch(comparativeData, () => {
+  //const raw = toRaw(comparativeData.value);
+  renderInstance.joinData(comparativeData.value);
+  renderInstance.render();
+});
 </script>
 
 <style>

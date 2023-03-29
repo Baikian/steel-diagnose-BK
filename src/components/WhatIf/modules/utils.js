@@ -60,6 +60,7 @@ export function allInfoData(data) {
   const len = data.length;
   if (len <= 0) return result;
 
+
   const allPlates = data.map(d => d.category.map(e => e.detail)).flat(2);
   const infoExtent = {};
   infoTarget.forEach(key => infoExtent[key] = d3.extent(allPlates, d => d[key]));
@@ -74,6 +75,22 @@ export function allInfoData(data) {
 
     let groups = d3.groups(merge, d => d.platetype);
     for (let [cate, dat] of groups) {
+      let good_flag = 0;
+      let bad_flag = 0;
+      let no_flag = 0;
+      dat.forEach((d, i) => {
+        if(d.merge_flag == 'true'){
+          good_flag = good_flag + d.good_flag;
+          bad_flag = bad_flag + d.bad_flag;
+          no_flag = no_flag + d.no_flag;
+        }
+        else{
+          good_flag = 3;
+          bad_flag = 2;
+          no_flag = 1;
+        }
+      });
+
       const plates = dat.map(e => e.detail).flat();
       const batch_label = d3.groups(plates, d => d.flag_lable).sort((a, b) => a[0] - b[0]);
       const color = getColor(
@@ -96,6 +113,9 @@ export function allInfoData(data) {
         link: dat.map(linkInfo),
         detail: detail,
         color: color,
+        good_flag: good_flag,
+        bad_flag: bad_flag,
+        no_flag: no_flag
       });
     }
 

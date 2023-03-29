@@ -47,12 +47,12 @@ export default class TemporalView extends SuperGroupView {
       // console.log("initData", data)
     }
     else {  //更新数据
-      let newData = {};
-      for (let item in data) {
-        newData[data[item].id] = data[item].data;
-      }
-      this.updateData(data.map(d => d.id), newData);
-      return this;
+      // let newData = {};
+      // for (let item in data) {
+      //   newData[data[item].id] = data[item].data;
+      // }
+      // this.updateData(data.map(d => d.id), newData);
+      // return this;
     }
 
     this._mergeStatus = false;
@@ -131,7 +131,7 @@ export default class TemporalView extends SuperGroupView {
   #initSetting() {
     this._barWidth = 300;
     this._temporalMargin = { top: 5, bottom: 5, left: 5, right: 5 };
-    this._temporalHeight = 74;
+    this._temporalHeight = 90;
     this._temporalWidth = d3.sum(this._mergeArray);
 
     this._temporal_Height = this._temporalHeight + this._temporalMargin.top + this._temporalMargin.bottom;
@@ -143,7 +143,7 @@ export default class TemporalView extends SuperGroupView {
     this._merge_Height = this._mergeHeight + this._mergeMargin.top + this._mergeMargin.bottom;
 
     this._cardMargin = { top: 5, bottom: 5, left: 5, right: 5 };
-    this._cardWidth = 350 + this._barWidth + this._mergeWidth + this._cardMargin.left + this._cardMargin.right;
+    this._cardWidth = -60 + this._barWidth + this._mergeWidth + this._cardMargin.left + this._cardMargin.right;
 
     this._chartMargin = 15;
 
@@ -174,7 +174,7 @@ export default class TemporalView extends SuperGroupView {
     let keys = sortedIndex(this._labelName.map(d => LD[d].value), false),
       arr = [],
       end = this._viewHeight - this._margin.bottom;
-    
+
     keys.forEach((d, i) => {
       const obj = LD[this._labelName[d]],
         prev = i > 0 ? LD[this._labelName[keys[i - 1]]] : 0;
@@ -183,7 +183,7 @@ export default class TemporalView extends SuperGroupView {
       obj.y = (i > 0 ? prev.y + prev.height : 0) + (i > 0 ? 1 : 0) * this._chartMargin;
     });
     let currIndex = this._labelName[keys[this._cursorIndex]];
-    
+
 
     let amendment = LD[currIndex].y;  //y修正值
     keys.forEach((d, i) => {
@@ -219,7 +219,7 @@ export default class TemporalView extends SuperGroupView {
       }
     })
 
-    // console.log('batchDetails', this._batchDetails)
+    console.log('batchDetails', this._batchDetails)
     // console.log('labelDetails', this._labelDetails)
     // console.log('labelName', this._labelName)
     // //下面这两个是对应的，现在的视图要显示的 
@@ -263,7 +263,7 @@ export default class TemporalView extends SuperGroupView {
   #renderGroup() {
     this._cardGroup = this._container.append("g")
       .attr("class", "cardGroup")
-      .attr("transform", translate([200, 0]))
+      .attr("transform", translate([330, -10]))
       // rect是诊断的背景
       .call(g => g.append("rect")
         .attr("stroke", "none")
@@ -310,14 +310,14 @@ export default class TemporalView extends SuperGroupView {
           .attr("dy", 0)
           .attr("stdDeviation", 2.5)
           .attr("flood-color", "#bfbdbd")))//#ededed
-      // 里面的左边框和阴影
-      .call(g => g.append("filter")
-        .attr("id", "batch-shadow")
-        .call(g => g.append("feDropShadow")
-          .attr("dx", 0)
-          .attr("dy", 0)
-          .attr("stdDeviation", 1)
-          .attr("flood-color", "#bfbdbd")));//#ededed
+    // 里面的左边框和阴影
+    // .call(g => g.append("filter")
+    //   .attr("id", "batch-shadow")
+    //   .call(g => g.append("feDropShadow")
+    //     .attr("dx", 0)
+    //     .attr("dy", 0)
+    //     .attr("stdDeviation", 1)
+    //     .attr("flood-color", "#bfbdbd")));//#ededed
     const markerBoxWidth = 5;
     const markerBoxHeight = 5;
     const refX = markerBoxWidth / 2;
@@ -405,7 +405,7 @@ export default class TemporalView extends SuperGroupView {
         update => update
           .transition().duration(500).ease(d3.easeLinear)
           .call(updateGroupFunc)
-          // .call(tar => updateElement(tar.selectAll(".outerBox"), cardAttrs))
+        // .call(tar => updateElement(tar.selectAll(".outerBox"), cardAttrs))
         // .call(tar => updateElement(tar.selectAll(".barBorder"), barGroupAttrs))
         ,
         exit => exit.transition().duration(500).ease(d3.easeLinear).call(updateGroupFunc).remove())
@@ -437,14 +437,14 @@ export default class TemporalView extends SuperGroupView {
       })
   }
 
-  //生成card右边的内容
+  //生成箭头
   #joinBatchElement(group,
     {
       context = this,
       groupAttrs = {
         transform: d => {
           // console.log(d, this._batchDetails[d], this._batchName)
-          return translate([this._batchDetails[d].xRange[0] + this._cardMargin.left + this._barWidth + 350, this._cardMargin.top])
+          return translate([this._batchDetails[d].xRange[0] + this._cardMargin.left + this._barWidth - 100, this._cardMargin.top + 45])
         },
         class: function (d) { return `label_${getParentData(this, 1)} batch_${d} batchElement` }
       },
@@ -452,7 +452,7 @@ export default class TemporalView extends SuperGroupView {
       cardAttrs = {
         height: function () {
           return context._labelDetails[getParentData(this, 2)].height
-            - context._cardMargin.top - context._cardMargin.bottom
+            - context._cardMargin.top - context._cardMargin.bottom - 40
         },
         class: "renderBox",
         label: function () { return context._labelDetails[getParentData(this, 2)].height },
@@ -798,11 +798,11 @@ export default class TemporalView extends SuperGroupView {
   #lineChart(group) {
     let context = this;
     let width = 310,
-      height = 100,
+      height = 90,
       padding = {
         top: 10,
         right: 40,
-        bottom: 10,
+        bottom: 20,
         left: 40
       };
 
@@ -814,7 +814,7 @@ export default class TemporalView extends SuperGroupView {
       .join(
         enter => enter.append('g')
           .attr('class', 'lineBox')
-          .attr('transform', translate([400, 0]))
+          .attr('transform', translate([200, 0]))
           .each(function (d) {
             let label = getParentData(this, 1), //getParentData(this, 1), getParentData(this, 0)
               indexDatum = context._labelDetails[label],
@@ -828,22 +828,28 @@ export default class TemporalView extends SuperGroupView {
               .scale(xScale)
               .tickSize(5);
 
-            lineBox.append('g')
-              .call(xAxis)
-              .attr("transform", "translate(0," + (height - padding.bottom - 10) + ")")
-              .selectAll("text")
-              .attr("transform", translate([-50, 0]))
-              .attr("font-size", "0px")
-              .attr("dx", "50px");
+            // lineBox.append('g')
+            //   .call(xAxis)
+            //   .attr("transform", "translate(0," + (height - padding.bottom - 10) + ")")
+            //   .selectAll("text")
+            //   .attr("transform", translate([-50, 0]))
+            //   .attr("font-size", "0px")
+            //   .attr("dx", "50px");
 
-            let yDomain = d3.extent(lineDatum, d => d.value);
+            let extent = d3.extent(lineDatum, d => d.value);
+            let limit = [lineDatum[0].l, lineDatum[0].u]
+            const yDomain  = [
+              Math.min(...extent, ...limit),
+              Math.max(...extent, ...limit)
+            ];
+
             let yScale = d3.scaleLinear()
               .domain(yDomain)
-              .range([height - padding.bottom - 15, padding.top + 5]);
+              .range([height - padding.bottom, padding.top]);
 
             let yAxis = d3.axisLeft()
               .scale(yScale)
-              .ticks(5);
+              .ticks(4);
 
             lineBox.append('g')
               .call(yAxis)
@@ -855,14 +861,15 @@ export default class TemporalView extends SuperGroupView {
                 return xScale(e.upid) + (f === lineDatum.length - 1 ? 15 : 0)
               })
               .y(e => yScale(e.value))
-              .curve(d3.curveLinear)(lineDatum)
+              // .curve(d3.curveCardinal.tension(0.3))(lineDatum)
+              .curve(d3.curveCatmullRom.alpha(0.9))(lineDatum)
 
             lineBox.append("path")
               .datum(lineDatum)
               .attr('transform', translate([25, 0]))
               .attr("fill", "none")
-              .attr("stroke", "steelblue")
-              .attr("stroke-width", 1.5)
+              .attr("stroke", "rgb(179,89,104)")
+              .attr("stroke-width", 2)
               .attr("d", curveline);
 
             //生成范围
@@ -886,87 +893,84 @@ export default class TemporalView extends SuperGroupView {
               .data(lineDatum.filter(d => d.l > d.value || d.u < d.value))
               .join("circle")
               // .attr('transform', translate([20, 0]))
-              .attr('r', '1.5')
+              .attr('r', '5')
               .attr('class', 'mergeCircle')
               .attr('opacity', '1')
-              .attr("fill", "white")
-              .attr("stroke-width", "1")
-              .attr("stroke", 'red')
+              .attr("fill", "rgb(221,181,188)")
+              .attr("stroke-width", "1.5")
+              .attr("stroke", 'rgb(137,63,75)')
               .attr('transform', d => translate([xScale(d.upid) + 25, yScale(d.value)]))
           })
       )
-
-
   }
 
   //南丁格尔图
   #nandinggeer(group) {
 
-    const data = [
-      { name: "外包", value: 2500 },
-      { name: "金融", value: 5054 },
-      { name: "制造", value: 5120 },
-      { name: "金融", value: 4754 },
-      { name: "制造", value: 1120 },
-      { name: "咨询", value: 6032 }
-    ];
+    // const data = [
+    //   { name: "外包", value: 2500 },
+    //   { name: "金融", value: 5054 },
+    //   { name: "制造", value: 5120 },
+    //   { name: "金融", value: 4754 },
+    //   { name: "制造", value: 1120 },
+    //   { name: "咨询", value: 6032 }
+    // ];
 
-    let roseBox = group.append('g')
-      .attr('transform', translate([this._cardMargin.left + 60, this._cardMargin.top + 35]))
+    // let roseBox = group.append('g')
+    //   .attr('transform', translate([this._cardMargin.left + 60, this._cardMargin.top + 35]))
 
-    const pieData = d3.pie()
-      .value((d) => d.value)
-      .sort((a, b) => a.value - b.value)(data);
+    // const pieData = d3.pie()
+    //   .value((d) => d.value)
+    //   .sort((a, b) => a.value - b.value)(data);
 
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
+    // const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-    const allCount = data.reduce((pre, cur) => pre + cur.value, 0);
+    // const allCount = data.reduce((pre, cur) => pre + cur.value, 0);
 
-    const roseArc = d3.arc()
-      .innerRadius(0)
-      .outerRadius((d) => {
-        return (d.value / allCount) * 80 + 20;
-      })
-      .cornerRadius(2); // 圆角
+    // const roseArc = d3.arc()
+    //   .innerRadius(0)
+    //   .outerRadius((d) => {
+    //     return (d.value / allCount) * 80 + 20;
+    //   })
+    //   .cornerRadius(2); // 圆角
 
-    const arcGroup = roseBox.append("g")
-      .attr("transform", "translate(10, 10)")
-      .selectAll("path")
-      .data(pieData);
+    // const arcGroup = roseBox.append("g")
+    //   .attr("transform", "translate(10, 10)")
+    //   .selectAll("path")
+    //   .data(pieData);
 
-    arcGroup.join("path")
-      .attr("fill", 'rgb(227, 173, 146)')
-      .attr('opacity', '0.6')
-      .attr("d", roseArc);
+    // arcGroup.join("path")
+    //   .attr("fill", 'rgb(227, 173, 146)')
+    //   .attr('opacity', '0.6')
+    //   .attr("d", roseArc);
   }
 
   //生成柱状图
   #columnChart(group) {
-    let w = 180;
-    let h = 104;
+    let w = 130;
+    let h = 100;
+    let col_h = 10;
     let barPadding = 1;
 
-    let dataset = [5, 10, 13, 19, 21, 25, 22];
+    let dataset = [15, 20, 40, 80, 50];
 
     let columnBox = group.append('g')
-      .attr('transform', translate([this._cardMargin.left + 150, this._cardMargin.top - 20]))
+      .attr('transform', translate([this._cardMargin.left, this._cardMargin.top]))
 
     columnBox.selectAll("rect")
       .data(dataset)
       .enter()
       .append("rect")
       .attr('fill', 'rgb(227, 173, 146)')
-      .attr('opacity', '0.5')
+      .attr('opacity', '1')
       .attr("x", function (d, i) {
-        return i * (w / dataset.length) + 5;
+        return w - d;
       })
-      .attr("y", function (d) {
-        return h - (d * 3);
+      .attr("y", function (d, i) {
+        return i * (col_h + 3);
       })
-      .attr("width", w / dataset.length - barPadding)
-      .attr("height", function (d) {
-        return d * 3;
-      });
+      .attr("width", d => d)
+      .attr("height", col_h);
   }
 
   //mouseenter则其他card变透明

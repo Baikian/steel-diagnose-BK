@@ -34,7 +34,6 @@ export default class InfoView extends SuperGroupView {
 
   joinData(value, extent) {
     this._rawData = value;
-    // console.log('value', value);
     this._extent = extent;
     return this;
   }
@@ -69,14 +68,16 @@ export default class InfoView extends SuperGroupView {
       // .text(this._rawData.id)
       .text(d => {
         const newId = [];
-        const length = d.length;
-        for (var i = 2; i < length; i++) {
+        const length = this._rawData.id.length;
+        for (let i = 2; i < length; i++) {
           if (i > 6)
             break;
           else
-            newId.push(d[i]);
+            newId.push(this._rawData.id[i]);
         }
+        // console.log('newId', newId);
         return newId.join("");
+        // return 333;
       })
       .attr('transform', `translate(${[15, 18]})`)
       .attr("fill", "#94a7b7")
@@ -93,21 +94,6 @@ export default class InfoView extends SuperGroupView {
       .attr('stroke', '#ccc')
       .attr('stroke-width', 1.5)
 
-    //圆环   
-    const random = Math.random();
-    const pie = d3.pie()([random, 1 - random]);
-    const outerPath = d3.arc().outerRadius(8).innerRadius(4).padAngle(0.09);
-    const labelColor = ['#94a7b7', '#c65b24']; // [bad, good, noflag]
-    // const labelColor = ['#c65b24', '#94a7b7', '#71797e']; // [bad, good, noflag]
-    this._container.selectAll('orterArc')
-      .data(pie)
-      .join('path')
-      .attr('transform', `translate(${[70, 12.5]})`)
-      .attr("fill", function (d, i) {
-        return labelColor[i];
-      })
-      .attr("d", outerPath)
-      .attr('opacity', 0.8);
   }
 
   #renderInfoContent({
@@ -231,15 +217,15 @@ export default class InfoView extends SuperGroupView {
     //后续建议改成一个g包裹住
     this._container.append('rect')
       .style("fill", "rgb(111,111,111)")
-      .attr('x', 105)
+      .attr('x', 103)
       .attr('y', -45)
       .attr('rx', 4)
       .attr('ry', 4)
       .attr('height', 30)
-      .attr('width', 50)
+      .attr('width', 60)
 
 
-    const vertices = [[100, -30], [105, -34], [105, -26]],
+    const vertices = [[100, -30], [103, -34], [103, -26]],
       fontSize = `9px`,
       fontFamily = GillSans;
 
@@ -250,33 +236,68 @@ export default class InfoView extends SuperGroupView {
 
     this._container.append("text")
       .text(d => {
-        return `Cur. ${this._rawData.curNum}`;
+        return `Bad. ${this._rawData.bad_flag}`;
       })
-      .attr('x', 110)
+      .attr('x', 107)
       .attr('y', -35)
       .attr('fill', 'white')
       .style('font-family', fontFamily)
       .style('font-size', fontSize)
       .style('font-style', 'normal')
-      //
+
+
+    //
+
+    const data = [
+      { x: 140, y: -31},
+      { x: 150, y: -40}
+    ];
+
+    const line = d3.line()
+      .x(d => d.x)
+      .y(d => d.y);
+
+    this._container.append('path')
+      .datum(data)
+      .attr('fill', 'none')
+      .attr('stroke', 'white')
+      .attr('stroke-width', 1)
+      .attr('d', line);
+
 
     this._container.append('rect')
       .style("fill", "white")
-      .attr('x', 110)
-      .attr('y', -31)
+      .attr('x', 107)
+      .attr('y', -32)
       .attr('height', 1)
-      .attr('width', 35)
+      .attr('width', 33)
 
     this._container.append("text")
       .text(d => {
-        return `Prev.${this._rawData.prevNum}`;
+        return `Good.${this._rawData.good_flag}`;
       })
-      .attr('x', 110)
+      .attr('x', 107)
       .attr('y', -20)
       .attr('fill', 'white')
       .style('font-family', fontFamily)
       .style('font-size', fontSize)
       .style('font-style', 'normal')
+
+    //圆环   
+    const random = Math.random();
+    const pie = d3.pie()([this._rawData.good_flag, this._rawData.bad_flag, this._rawData.no_flag]);
+    const outerPath = d3.arc().outerRadius(8).innerRadius(4).padAngle(0.09);
+    const labelColor = ['#94a7b7', '#c65b24', '#71797e'];
+    // const labelColor = ['#c65b24', '#94a7b7', '#71797e']; // [bad, good, noflag]
+    this._container.selectAll('orterArc')
+      .data(pie)
+      .join('path')
+      .attr('transform', `translate(${[153, -30]})`)
+      .attr("fill", function (d, i) {
+        return labelColor[i];
+      })
+      .attr("d", outerPath)
+      .attr('opacity', 0.8);
 
   }
 }

@@ -1,21 +1,39 @@
 .el-card__header {
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-weight: 700;
   height: 40px;
   background-color: white;
   color: black;
-  padding: 4px 2px 2px 12px;
+  padding: 0px;
   display: flex;
   align-items: center;
-  border: 1.5px;
-  border-bottom-style: solid;
-  border-color: #b3b3b3;
+  border: 3px;
 }
 .el-card__body {
-  padding: 5px 5px;
+  padding: 0px;
 }
 .el-card{
-  border: 1.5px;
+  border-radius: 0px;
+  border: 4px;
   border-style: solid;
-  border-color: #b3b3b3;
+  border-color: #455964;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.title-background {
+  position: relative;
+  border-top: 40px solid #455964;
+  border-left: 0px solid transparent;
+  border-right: 40px solid transparent;
+  height: 0;
+  width: 160px;
+}
+
+.title-text {
+  position: absolute;
+  transform: translate(5%, -130%);
+  color: white;
+  font-size: 19px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: bolder;
+  justify-content: center;
+  align-content: center;
 }

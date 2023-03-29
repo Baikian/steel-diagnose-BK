@@ -1,17 +1,11 @@
 <template>
   <el-card class="box-card">
     <template #header>
-      <div style = "margin-right: 13px; margin-top: 7px;">
-        <svg t="1673965441478" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-          p-id="6169" width="20" height="20">
-          <path
-            d="M138.545152 765.825024l95.52896 0c16.662528 0 30.16704-13.50656 30.16704-30.164992L264.241152 309.9648c0-16.662528-13.50656-30.16704-30.16704-30.16704L138.545152 279.79776c-16.662528 0-30.16704 13.50656-30.16704 30.16704l0 425.693184C108.376064 752.318464 121.882624 765.825024 138.545152 765.825024zM445.435904 765.825024l95.52896 0c16.662528 0 30.16704-19.744768 30.16704-44.10368L571.131904 99.325952c0-24.36096-13.50656-44.107776-30.16704-44.107776l-95.52896 0c-16.66048 0-30.16704 19.746816-30.16704 44.107776l0 622.395392C415.268864 746.080256 428.773376 765.825024 445.435904 765.825024zM752.326656 765.825024l95.52896 0c16.662528 0 30.16704-18.345984 30.16704-40.986624l0-578.3552c0-22.636544-13.50656-40.984576-30.16704-40.984576l-95.52896 0c-16.662528 0-30.16704 18.348032-30.16704 40.984576l0 578.3552C722.157568 747.476992 735.664128 765.825024 752.326656 765.825024zM6.144 816.103424l968.704 0 0 50.2784-968.704 0 0-50.2784Z"
-            fill="#2c2c2c" p-id="6170"></path>
-        </svg>
-      </div>
-      <div class="card-header">
+      <div class="title-background">
+      <div class="title-text">
         <span>Monitor View</span>
       </div>
+    </div>
     </template>
     <!-- <WhatIfMain
       class="what-if-view"
@@ -34,6 +28,7 @@ import { WhatIfView, TREND, GANTT, TEMPORAL } from './main';
 import platesStatistics from '@/data/platesStatistics.json';
 import ganttData from '@/data/ganttData.json';
 import batchData from '@/data/batchData.json'
+import testData from '@/data/testData.json'
 
 const store = useStore();
 const monthPickDate = computed(() => store.state.monthPickDate);
@@ -110,6 +105,7 @@ setTimeout(() => {
 watch(time, () => {
   // console.log('batch update', batchData)
   // renderInstance.render(TEMPORAL, batchData);
+  renderInstance.render(TEMPORAL, testData);
 });
 
 </script>
@@ -119,5 +115,22 @@ watch(time, () => {
 
 #WhatIfMain {
   height: 1010px;
+}
+.title-background {
+  border-top: 40px solid #455964;
+  border-left: 0px solid transparent;
+  border-right: 40px solid transparent;
+  height: 0;
+  width: 160px;
+}
+
+.title-text {
+  padding-left: 5px;
+  color: white;
+  font-size: 19px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: bolder;
+  justify-content: center;
+  align-content: center;
 }
 </style>

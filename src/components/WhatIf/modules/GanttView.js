@@ -19,6 +19,10 @@ import {
   comeFromRight,
 } from './utils';
 import { group } from 'd3';
+import leanerIcon from "../../../assets/images/leanerIcon_opera.svg"
+import ACCIcon from '../../../assets/images/ACCIcon.svg'
+import DQIcon from '../../../assets/images/DQIcon.svg'
+import FmTotalIcon from '../../../assets/images/FmTotalIcon.svg'
 
 export default class GanttView extends SuperGroupView {
   constructor({
@@ -59,7 +63,7 @@ export default class GanttView extends SuperGroupView {
   // 添加原始数据，并转换为绘图数据
   //传进来的是 GANTT  和接口取到的数据
   joinData(key, value) {
-    console.log('value', value);
+    // console.log('value', value);
     this._rawData = value;
     this._rawData.sort((a, b) => {
       let ta = new Date(a.startTime).getTime();
@@ -69,6 +73,8 @@ export default class GanttView extends SuperGroupView {
     let result = allInfoData(this._rawData);
     //每个规格的信息，包含起止时间，批次号，板坯号，详细upid，规格平均长宽高等
     this._infoData = result.data;
+
+    console.log('result', result);
     //所有规格的长宽高范围
     this._infoExtent = result.extent;
 
@@ -131,6 +137,7 @@ export default class GanttView extends SuperGroupView {
     //this._container 父元素内建的g
 
     const that = this;
+    // this._container.attr('transform', `translate(${[moveX, moveY]})`);
     this._container.selectChildren('*').remove();
 
     const xDomain = this._xScale.domain();
@@ -172,22 +179,27 @@ export default class GanttView extends SuperGroupView {
       this._currentKeys.push(arr);
     })
     console.log('_infoDataGroup', this._infoDataGroup);
+    console.log('this._currentKeys', this._currentKeys);
+
+
 
     this._container.append('rect')
       .attr('width', 2000)
-      .attr('height', this._height - 40)
+      .attr('height', this._height - 50)
       .attr('fill', 'white')
       .attr('transform', `translate(${0}, ${this._margin.top - 23})`)
+
 
     const ganttBatch = this._container.selectAll('.ganttBatch')
       .data(this._currentKeys, d => d.data)
       .join(enter => enter.append('g')
         .attr('class', d => `ganttBatch`)
         .attr('id', (_, i) => i)
-        .attr('transform', (_, i) => `translate(${batchPosition[i]}, ${this._margin.top})`)
+        .attr('transform', (_, i) => `translate(${batchPosition[i]}, ${this._margin.top + 5})`)
         // .attr('transform', translate([0, 0]))
         .call(g => this.#batchBoundary(g, batchWidth, batchPosition))  // 批次边界
         .call(g => this.#ganttContent(g))
+        //批次内滑动
         .on("wheel", function (e) {
 
           e.stopPropagation();
@@ -227,7 +239,8 @@ export default class GanttView extends SuperGroupView {
         })
       )
 
-    //实现批次滑动
+    this.#ganttEvent();
+    //实现gantt图滑动
     this._container.on('mousewheel', batchSlide)
     let position = 0; //记录g当前位置
     let oldArray = [0, 1, 2];
@@ -241,13 +254,13 @@ export default class GanttView extends SuperGroupView {
       const rightBorder = -(currentWidth);
       if (position >= 0 && event.deltaY < 0) {
         current_g
-          .attr('transform', `translate(${[0, 100]})`)
+          .attr('transform', `translate(${[0, 80]})`)
       }
       else if (position <= rightBorder && event.deltaY > 0) {
         current_g
           .transition()
           .duration(15)
-          .attr('transform', `translate(${[rightBorder, 100]})`)
+          .attr('transform', `translate(${[rightBorder, 80]})`)
       }
       else {
         //position= position+ event.deltaY / 5;
@@ -258,7 +271,7 @@ export default class GanttView extends SuperGroupView {
           .transition()
           .duration(200)
           .ease(d3.easeLinear)
-          .attr('transform', `translate(${[position, 100]})`)
+          .attr('transform', `translate(${[position, 80]})`)
       }
       let curArray = new Array();
       that._batchPositon.forEach((d, i) => {
@@ -278,6 +291,35 @@ export default class GanttView extends SuperGroupView {
     return this;
   }
 
+  //事件带
+  #ganttEvent() {
+    //图元大小
+    const cx = 17;
+    const bandHeight = 30;
+
+    const event_g = this._container.append('g')
+      .attr('class', 'event_g')
+      .attr('transform', `translate(${0}, ${this._margin.top - 30})`)
+
+    //背景，灰色带
+    event_g.append('rect')
+      .attr('class', 'eventRect')
+      .attr('width', 2000)
+      .attr('height', bandHeight)
+      .attr('fill', 'rgb(246,244,240)')
+
+    //图标
+    const iconGroup = event_g.selectAll('ACCEventIcon')
+      .data(this._currentKeys)
+      .enter()
+      .append('g')
+      .attr('class', 'ACCEventIcon')
+      .attr('transform', (_, i) => `translate(${[this._batchPositon[i] + 10, bandHeight / 2]})`)
+
+    this._renderIcon(iconGroup, cx, ACCIcon);
+  }
+
+  //批次边框
   #batchBoundary(group, batchWidth, positionarray) {
 
     const width = 10;
@@ -293,7 +335,7 @@ export default class GanttView extends SuperGroupView {
       .attr('width', (d, i) => {
         return batchWidth[i];
       })
-      .attr('height', 180)
+      .attr('height', 165)
 
     group.append('rect')
       .attr('class', 'batchFrame-top')
@@ -317,14 +359,14 @@ export default class GanttView extends SuperGroupView {
       .attr('x', -9)
       .attr('y', 0)
       .attr('width', '8')
-      .attr('height', '195')
+      .attr('height', '180')
 
     group.attr('fill', '#7C8C99')
 
-    group.append('path')
-      .attr('class', 'batch-boundary')
-      .attr('transform', (d, i) => `translate(0, 0)`)
-      .attr('d', Boundary.batch({ width, height }))
+    // group.append('path')
+    //   .attr('class', 'batch-boundary')
+    //   .attr('transform', (d, i) => `translate(0, 0)`)
+    //   .attr('d', Boundary.batch({ width, height }))
   }
 
   #ganttContent(group) {
@@ -374,7 +416,7 @@ export default class GanttView extends SuperGroupView {
     function enterHandle(enter) {
       enter.append('g')
         .attr('class', 'info-root')
-        .attr('opacity', 0.3)
+        .attr('opacity', 1)
         .attr('transform', d => {
           if (mode > 0) {
             return `translate(${[batchWidth[d.key] + 10, transY]})`
@@ -453,12 +495,49 @@ export default class GanttView extends SuperGroupView {
     }
   }
 
+  //组件间通信
   #updateOtherInstance() {
     const disDomain = this._displayScale.domain();
-    console.log('disDomain', disDomain);
     const option = { domain: disDomain };
     eventBus.emit(MOVE_GANTT, option);
-
     eventBus.emit('batchNum', this._infoDataGroup.length);
+  }
+
+  _renderIcon(iconGroup, cx, iconURL) {
+    const color = '#C65B24'
+    const color1 = '#94a7b7'
+
+    const background_color = "white";
+    const stroke_color = "#94a7b7";
+    iconGroup
+      .call(g =>
+        g.append('defs')
+          .append('filter')
+          .attr('id', 'shadowicon')
+          .append('feDropShadow')
+          .attr('dx', 0)
+          .attr('dy', 0)
+          .attr('stdDeviation', 1)
+          .attr('flood-color', stroke_color)
+      )
+      .call(g =>
+        g.append('circle')
+          .attr('class', 'inner_circle')
+          .attr('cx', 0)
+          .attr('cy', 0)
+          .attr('r', 0.68 * cx)
+          .attr('fill', background_color)
+          .attr('stroke', 'black')
+          .attr('stroke-width', 0.25)
+          .attr('filter', 'url(#shadowicon)')
+      )
+      .call(g =>
+        g.append('image')
+          .attr('transform', `translate(${-0.45 * cx},${-0.45 * cx})`)
+          .attr('class', 'iconwarning')
+          .attr('width', 0.9 * cx)
+          .attr('height', 0.9 * cx)
+          .attr('href', iconURL)
+      )
   }
 }

@@ -52,6 +52,11 @@ export default class TrendView extends SuperGroupView {
       (d, i) => d + this._rawData.bad_flag[i] + this._rawData.no_flag[i]);
 
     this._container.selectChildren().remove();  // 先清空container
+    this._container.append('rect')
+      .attr('width', 1250)
+      .attr('height', 100)
+      .attr('fill', 'white')
+      .attr('transform', `translate(${0, 0})`)
 
     const options = {
       width: this._viewWidth,
@@ -60,9 +65,12 @@ export default class TrendView extends SuperGroupView {
       xDomain: this._rawData.endTimeOutput,
       colors: labelColor,
     }
-    this.#renderStackBar(this._stackData, options);
-    this.#updateThumbnail();
 
+    this.#areaChart(this._stackData, options);
+    this.#renderStackBar(this._stackData, options);
+
+    this.#buttonGroup();
+    this.#updateThumbnail();
     return this;
   }
 
@@ -100,7 +108,7 @@ export default class TrendView extends SuperGroupView {
     height, // outer height, in pixels
     marginTop = 0,
     marginRight = 0,
-    marginBottom = 20,
+    marginBottom = 35,
     marginLeft = 0,
     yDomain, // [ymin, ymax]
     yRange = [height - marginBottom, marginTop], // [bottom, top]
@@ -123,15 +131,18 @@ export default class TrendView extends SuperGroupView {
       .data(data)
       .join('g')
       .attr('class', (_, i) => `stack-bar-${this._key[i]}`)
+      .attr('class', (_, i) => 'stack-bar')
       .attr('fill', (_, i) => colors[i])
       .selectAll('.bar-rect')
       .data(d => d)
       .join('rect')
+      .attr('class','bar-rect')
       .attr('x', (_, i) => xScale(xDomain[i]))
       .attr('y', ([y1, y2]) => Math.min(yScale(y1), yScale(y2)))
       .attr('height', ([y1, y2]) => Math.abs(yScale(y1) - yScale(y2)))
       .attr('width', xScale.bandwidth())
-      .attr('opacity', 0.2);
+      .attr('opacity', 0.2)
+
 
     const brush = d3.brushX()
       .extent([[marginLeft, marginTop], [width - marginRight, height - marginBottom]])
@@ -180,7 +191,7 @@ export default class TrendView extends SuperGroupView {
             .attr("cursor", "ew-resize")
             .attr("d", (_, i) => Boundary.brush({
               width: 10,
-              height: this._viewHeight - this._margin.top - this._margin.bottom,
+              height: this._viewHeight - this._margin.top - this._margin.bottom - 15,
               direction: i === 0 ? 'left' : 'right'
             }))
         }
@@ -213,7 +224,7 @@ export default class TrendView extends SuperGroupView {
     const rectWidth = this._xScale(disDomain[1]) - this._xScale(disDomain[0]);
     const linkGroup = this._container.append('g')
       .attr('class', 'link-group')
-      .attr('transform', `translate(${this._xScale(disDomain[0]) - 40}, ${tranY - 1})`)
+      .attr('transform', `translate(${this._xScale(disDomain[0]) - 40}, ${tranY - 16})`)
     linkGroup.append('rect')
       .attr('width', rectWidth)
       .attr('height', rectHeight)
@@ -231,7 +242,7 @@ export default class TrendView extends SuperGroupView {
       .data(paintData)
       .join('g')
       .attr('class', 'zoom-range')
-      .attr('transform', (_, i) => `translate(${this._xScale(disDomain[i]) - 40}, ${tranY - 5})`)
+      .attr('transform', (_, i) => `translate(${this._xScale(disDomain[i]) - 40}, ${tranY - 20})`)
     rangeGroup.append('circle')
       .attr('r', width / 2)
       .attr('fill', (_, i) => labelColor[i])
@@ -271,7 +282,7 @@ export default class TrendView extends SuperGroupView {
 
     const thumbnailBox = this._container.append('g')
       .attr('class', 'thumbnailBox')
-      .attr('transform', `translate(${[this._viewWidth / 2, this._viewHeight + 10]})`)
+      .attr('transform', `translate(${[this._viewWidth / 2, this._viewHeight - 25]})`)
 
     thumbnailBox
       .append('rect')
@@ -330,4 +341,123 @@ export default class TrendView extends SuperGroupView {
         })
     })
   }
+
+  #buttonGroup() {
+
+    const that = this;
+
+    const buttonsData = [
+      { id: 'Bar', value: 1 },
+      { id: 'Area', value: 2 }
+    ];
+
+    const buttonGroup = this._container.append("g")
+      .attr('class', 'buttongroup')
+      .attr("transform", "translate(1155, 15)");
+
+    // 创建按钮
+    const buttons = buttonGroup.selectAll("rect")
+      .data(buttonsData)
+      .enter()
+      .append("rect")
+      .attr('id', d => `${d.id}`)
+      .attr("x", 0)
+      .attr("y", function (d, i) {
+        return i * 30;
+      })
+      .attr("width", 30)
+      .attr("height", 20)
+      .attr("fill", "gray")
+      .attr("rx", 5)
+      .attr("ry", 5);
+
+    this._container.select('#Bar')
+      .on('click', barChart)
+
+    this._container.select('#Area')
+      .on('click', areaChart)
+
+    function barChart() {
+      that._container.select('.trend-stack-area-group')
+        .transition().duration(200).ease(d3.easeLinear)
+        .attr('opacity', 0);
+      that._container.select('.trend-stack-bar-group')
+        .selectAll('.bar-rect')
+        .transition().duration(200).ease(d3.easeLinear)
+        .attr('opacity', 0.2)
+    }
+
+    function areaChart() {
+      that._container.select('.trend-stack-bar-group')
+        .selectAll('.bar-rect')
+        .transition().duration(200).ease(d3.easeLinear)
+        .attr('opacity', 0)
+      that._container.select('.trend-stack-area-group')
+        .transition().duration(200).ease(d3.easeLinear)
+        .attr('opacity', 0.2)
+    }
+
+  }
+
+  #areaChart(data, {
+    width = 640, // outer width, in pixels
+    height, // outer height, in pixels
+    marginTop = 0,
+    marginRight = 0,
+    marginBottom = 35,
+    marginLeft = 0,
+    yDomain, // [ymin, ymax]
+    yRange = [height - marginBottom, marginTop], // [bottom, top]
+    xDomain, // array of x-values
+    xRange = [marginLeft, width - marginRight], // [left, right]
+    yPadding = 0.1, // amount of y-range to reserve to separate bars
+    // colors = d3.schemeTableau10, // array of colors
+  } = {}) {
+
+    const xScale = d3.scaleTime([new Date(xDomain[0]), new Date(xDomain[xDomain.length - 1])], xRange);
+    const yScale = d3.scaleLinear(yDomain, yRange);
+
+    const series = this._stackData;
+
+    const areaGroup = this._container.append('g')    //柱状图在这个g里面
+      .attr('class', 'trend-stack-area-group')
+      .attr('opacity', 0.0)
+      .attr('transform', `translate(${[marginLeft, marginTop]})`);
+
+
+    // 裁剪露出来的部分
+    areaGroup.append("clipPath")
+      .attr("id", "clip")
+      .append("rect")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", 1200)
+      .attr("height", 65);
+
+    // 创建面积图
+    const area = d3.area()
+      .x(function (d) {
+        return xScale(new Date(d.data.endTimeOutput));
+      })
+      .y0(function (d) { return yScale(d[0]); })
+      .y1(function (d) { return yScale(d[1]); })
+      .curve(d3.curveCardinal);
+
+    const colors = d3.scaleOrdinal()
+      .domain(['bad_flag', 'good_flag', 'no_flag'])
+      .range(['#c65b24', '#94a7b7', '#71797e']);
+
+    areaGroup.selectAll(".area")
+      .data(series)
+      .enter()
+      .append("path")
+      .attr("class", "area")
+      .attr("d", area)
+      // .attr('opacity', 1)
+      .style("fill", function (d) { return colors(d.key); })
+      .attr("clip-path", "url(#clip)");
+
+
+  }
+
 }

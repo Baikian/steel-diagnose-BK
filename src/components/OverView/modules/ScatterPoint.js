@@ -52,11 +52,17 @@ export default class ScatterPoint extends SuperGroupView {
     //   .attr('r', this._rScale(data.details.production_rhythm))
     //   .attr('fill', '#aaa')
 
-    const r = 1.5;
-    const colorGroup ={
+    const r = 4;
+    const colorGroup_s ={
       'good': '#94a7b7',
       'bad': '#c65b24',
       'no': '#71797e'
+    }
+
+    const colorGroup ={
+      'good': '#B1BFCB',
+      'bad': '#DF7E4D',
+      'no': '#8E959A'
     }
 
     const flagGroup = {
@@ -79,9 +85,9 @@ export default class ScatterPoint extends SuperGroupView {
     this._container.append('circle')
       .attr('r', r)
       .attr('fill', colorGroup[maxKey])
-      .attr('stroke', colorGroup[maxKey])
-      .attr('stroke-width', 0.25)
-      .attr('opacity', 0.3)
+      .attr('stroke', colorGroup_s[maxKey])
+      .attr('stroke-width', 1)
+      .attr('opacity', 1)
 
     return this;
   }

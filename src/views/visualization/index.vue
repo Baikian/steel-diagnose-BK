@@ -3,6 +3,7 @@
     <el-col :span="4">
       <system-title></system-title>
       <control-panel></control-panel>
+      <parallel></parallel>
       <overview></overview>
     </el-col>
     <el-col :span="16">
@@ -16,11 +17,11 @@
 
 <script setup>
 import SystemTitle from '@/components/SystemTitle/index.vue';
-// import DatePicker from '@/components/DatePicker/index.vue';
 import WhatIf from '@/components/WhatIf/index.vue';
 import ComparativeView from '@/components/ComparativeView/index.vue';
 import ControlPanel from '@/components/ControlPanel';
 import Overview from '@/components/OverView/index.vue';
+import Parallel from '@/components/ControlPanel-2/index.vue';
 
 </script>
 
@@ -32,5 +33,9 @@ import Overview from '@/components/OverView/index.vue';
 }
 .what-if-content {
   margin: 0px 10px;
+}
+
+.el-rol {
+  margin-left: 100px;
 }
 </style>
