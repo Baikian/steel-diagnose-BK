@@ -4,6 +4,7 @@ import {
   processColor,
   cloneObject,
   SegoeUI,
+  labelColor,
 } from '@/utils';
 
 import {
@@ -20,7 +21,7 @@ export default class ProcessView extends SuperGroupView {
   } = {}, parentNode, rootName) {
     super({ width, height, moveX, moveY }, parentNode, rootName);
 
-    this._rootName = rootName;
+    this._rootName是否显示子工序 = rootName;
     this._margin = { top: 0, bottom: 0, left: 0, right: 0 };
 
     this._rawData = null;     // 原始数据
@@ -33,19 +34,20 @@ export default class ProcessView extends SuperGroupView {
     this._colors = cloneObject(processColor);
     this._colors.unshift('#ccc');
 
-    const temp = this.#getArcRadius();
-    this._inner = temp.inner; // 内圈半径, [r1, r2]
-    this._outer = temp.outer; // 外圈半径, [r1, r2]
+    // const temp = this.#getArcRadius();
+    // this._inner = temp.inner; // 内圈半径, [r1, r2]
+    // this._outer = temp.outer; // 外圈半径, [r1, r2]
   }
 
-  joinData(value, extent) {
+  joinData(value, extent, scale) {
     this._rawData = value;
     this._extend = extent;
-    // console.log('内部拿到的数据：', value)
-    // console.log('内部拿到的extent：', extent)
+    this._rScale = scale;
+    console.log('内部拿到的数据：', value)
+    console.log('内部拿到的extent：', extent)
 
-    this._angle = computeAngle();
-    this._fillData = computeArcFillAngle(value, extent, this._angle);
+    // this._angle = computeAngle();
+    // this._fillData = computeArcFillAngle(value, extent, this._angle);
 
     this._targetData = {
       steelspec: 'X80M',
@@ -66,7 +68,7 @@ export default class ProcessView extends SuperGroupView {
     //   .attr('height', this._viewHeight)
     //   .attr('fill', 'white')
     //   .attr('stroke', 'red')
-    
+
     // 分割线
     const splitLineX = this._viewWidth / 2 - 2;
     this._container.append('line')
@@ -74,76 +76,25 @@ export default class ProcessView extends SuperGroupView {
       .attr('x2', splitLineX).attr('y2', this._viewHeight)
       .attr('stroke', 'grey')
       .attr('stroke-width', 0.5)
-    
+
     // 批次指标
     const targetGroup = this._container.append('g')
       .attr('class', 'batch-target')
     this.#batchTarget(targetGroup);  // 指标信息
 
-    // 工序过程
+    // // 工序过程
+    // const circleGroup = this._container.append('g')
+    //   .attr('class', 'circle-group')
+    //   .attr('transform', `translate(${[this._viewWidth * 0.75, this._viewHeight * 0.5]})`)
+    // this.#stageFill(circleGroup);    // 绘制填充
+    // this.#stageStroke(circleGroup);  // 绘制边框
+
     const circleGroup = this._container.append('g')
       .attr('class', 'circle-group')
       .attr('transform', `translate(${[this._viewWidth * 0.75, this._viewHeight * 0.5]})`)
-    this.#stageFill(circleGroup);    // 绘制填充
-    this.#stageStroke(circleGroup);  // 绘制边框
+      .call(g => this.#batchCircle(g))
 
     return this;
-  }
-
-  #stageStroke(group) {
-    const path_attr = g => g
-        .attr('stroke', 'grey')
-        .attr('stroke-width', 0.5)
-        .attr('fill', 'none')
-
-    const circleStroke = group.append('g')
-      .attr('class', 'circle-stroke')
-    // 母工序
-    circleStroke.selectAll('.inner_stroke')
-      .data(this._angle)
-      .join(
-        enter => enter.append('path')
-          .attr('d', d => this.#arcPath(...this._inner, d.stage_start, d.stage_end))
-          .attr('class', d => `inner_${d.name}_stroke`)
-          .call(path_attr)
-      )
-    
-    if (!this._displaySub) return;
-    // 子工序
-    circleStroke.selectAll('.outer_stroke')
-      .data(this._angle.map(d => d.stage_sub).flat())
-      .join(
-        enter => enter.append('path')
-          .attr('d', d => this.#arcPath(...this._outer, d[0], d[1]))
-          .attr('class', `outer_stroke`)
-          .call(path_attr)
-      )
-  }
-
-  #stageFill(group) {
-    const circleFill = group.append('g')
-    .attr('class', 'circle-fill')
-    // 母工序
-    circleFill.selectAll('.inner_fill')
-      .data(this._fillData.stage)
-      .join(
-        enter => enter.append('path')
-          .attr('d', d => this.#arcPath(...this._inner, d[0], d[1]))
-          .attr('fill', (_, i) => this._colors[i])
-      )
-    
-    if (!this._displaySub) return;
-    // 子工序
-    circleFill.selectAll('.outer_fill')
-      .data(this._fillData.sub)
-      .join(
-        enter => enter.append('g')
-          .attr('fill', (_, i) => this._colors[i + 1])
-        .selectAll('.sub_fill')
-        .data(d => d)
-        .join('path')
-          .attr('d', d => this.#arcPath(...this._outer, d[0], d[1]))
-      )
   }
 
   #batchTarget(group) {
@@ -159,7 +110,7 @@ export default class ProcessView extends SuperGroupView {
       .attr('font-size', titleSize)
       .attr('font-weight', '600')
       .text(steelspec);
-    
+
     group.selectAll('item')
       .data(target)
       .join('text')
@@ -168,27 +119,109 @@ export default class ProcessView extends SuperGroupView {
       .text(d => `${d[0]}: ${d[1]}${d[2]}`);
   }
 
-  #arcPath(r1, r2, a1, a2) {  // 参数: 半径范围, 角度范围
-    return d3.arc()
-      .innerRadius(r1).outerRadius(r2)
-      .startAngle(a1).endAngle(a2)();
+  #batchCircle(group) {
+    const data = this._rawData;
+    const r = 30;
+    const pie = d3.pie()([data.bad, data.good, data.no]);
+    const path = d3.arc().outerRadius(r).innerRadius(r - r * 0.382 * 0.7).padAngle(0.05);
+
+    // 背景
+    group.append('circle')
+      .attr('r', r)
+      .attr('fill', 'white')
+      .attr('opacity', 0.8)
+
+    //圆环
+    const arcGroup = group.selectAll('.arc')
+      .data(pie)
+      .join('path')
+      .attr('d', path)
+      .attr('fill', (_, i) => labelColor[i])
+
+    //内圈圆
+    this._rScale.range([8, r * 0.618 * 0.7]);   // 重置 rScale
+    group.append('circle')
+      .attr('r', this._rScale(data.details.production_rhythm))
+      .attr('fill', '#aaa')
   }
 
-  #getArcRadius() {
-    const R = this._viewHeight / 2;
-    const innerW = 10;
-    const outerW = innerW * 0.618;
-    const gap = 3;
+  //   #getArcRadius() {
+  //     const R = this._viewHeight / 2;
+  //     const innerW = 10;
+  //     const outerW = innerW * 0.618;
+  //     const gap = 3;
 
-    const outer_r2 = R - 5;
-    const outer_r1 = outer_r2 - outerW;
-    const inner_r2 = outer_r1 - gap;
-    const inner_r1 = inner_r2 - innerW;
-    if (inner_r1 < 0) throw Error('半径不能小于0 !');
+  //     const outer_r2 = R - 5;
+  //     const outer_r1 = outer_r2 - outerW;
+  //     const inner_r2 = outer_r1 - gap;
+  //     const inner_r1 = inner_r2 - innerW;
+  //     if (inner_r1 < 0) throw Error('半径不能小于0 !');
 
-    return {
-      inner: [inner_r1, inner_r2],
-      outer: [outer_r1, outer_r2]
-    };
-  }
+  //     return {
+  //       inner: [inner_r1, inner_r2],
+  //       outer: [outer_r1, outer_r2]
+  //     };
+  //   }
 }
+
+  // #stageStroke(group) {
+  //   const path_attr = g => g
+  //     .attr('stroke', 'grey')
+  //     .attr('stroke-width', 0.5)
+  //     .attr('fill', 'none')
+
+  //   const circleStroke = group.append('g')
+  //     .attr('class', 'circle-stroke')
+  //   // 母工序
+  //   circleStroke.selectAll('.inner_stroke')
+  //     .data(this._angle)
+  //     .join(
+  //       enter => enter.append('path')
+  //         .attr('d', d => this.#arcPath(...this._inner, d.stage_start, d.stage_end))
+  //         .attr('class', d => `inner_${d.name}_stroke`)
+  //         .call(path_attr)
+  //     )
+
+  //   if (!this._displaySub) return;
+  //   // 子工序
+  //   circleStroke.selectAll('.outer_stroke')
+  //     .data(this._angle.map(d => d.stage_sub).flat())
+  //     .join(
+  //       enter => enter.append('path')
+  //         .attr('d', d => this.#arcPath(...this._outer, d[0], d[1]))
+  //         .attr('class', `outer_stroke`)
+  //         .call(path_attr)
+  //     )
+  // }
+
+  // #stageFill(group) {
+  //   const circleFill = group.append('g')
+  //     .attr('class', 'circle-fill')
+  //   // 母工序
+  //   circleFill.selectAll('.inner_fill')
+  //     .data(this._fillData.stage)
+  //     .join(
+  //       enter => enter.append('path')
+  //         .attr('d', d => this.#arcPath(...this._inner, d[0], d[1]))
+  //         .attr('fill', (_, i) => this._colors[i])
+  //     )
+
+  //   if (!this._displaySub) return;
+  //   // 子工序
+  //   circleFill.selectAll('.outer_fill')
+  //     .data(this._fillData.sub)
+  //     .join(
+  //       enter => enter.append('g')
+  //         .attr('fill', (_, i) => this._colors[i + 1])
+  //         .selectAll('.sub_fill')
+  //         .data(d => d)
+  //         .join('path')
+  //         .attr('d', d => this.#arcPath(...this._outer, d[0], d[1]))
+  //     )
+  // }
+
+  // #arcPath(r1, r2, a1, a2) {  // 参数: 半径范围, 角度范围
+  //   return d3.arc()
+  //     .innerRadius(r1).outerRadius(r2)
+  //     .startAngle(a1).endAngle(a2)();
+  // }

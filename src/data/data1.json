@@ -1,0 +1,487 @@
+{
+    "steelData": [
+        [
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 410,
+            "good": 300,
+            "bad": 40,
+            "noflag": 70,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 410,
+            "good": 300,
+            "bad": 40,
+            "noflag": 70,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 2,
+            "match": 1
+        },
+        {
+            "num": 410,
+            "good": 300,
+            "bad": 40,
+            "noflag": 70,
+            "batch": 2,
+            "match": 1
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 3,
+            "match": 0
+        },
+        {
+            "num": 410,
+            "good": 300,
+            "bad": 40,
+            "noflag": 70,
+            "batch": 3,
+            "match": 0
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 3,
+            "match": 0
+        },
+        {
+            "num": 410,
+            "good": 300,
+            "bad": 40,
+            "noflag": 70,
+            "batch": 3,
+            "match": 0
+        }
+    ],
+    [
+        {
+            "num": 400,
+            "good": 266,
+            "bad": 60,
+            "noflag": 74,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 1,
+            "match": 0
+        }
+        ,
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 2,
+            "match": 0
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 2,
+            "match": 0
+        }
+        ,
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 2,
+            "match": 0
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 3,
+            "match": 1
+        }
+        ,
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 3,
+            "match": 1
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 4,
+            "match": 0
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 4,
+            "match": 0
+        }
+        ,
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 4,
+            "match": 0
+        }
+    ],
+    [
+        {
+            "num": 500,
+            "good": 334,
+            "bad": 90,
+            "noflag": 76,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 500,
+            "good": 334,
+            "bad": 90,
+            "noflag": 76,
+            "batch": 2,
+            "match": 1
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 2,
+            "match": 1
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 2,
+            "match": 1
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 2,
+            "match": 1
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 3,
+            "match": 0
+        },
+        {
+            "num": 500,
+            "good": 334,
+            "bad": 90,
+            "noflag": 76,
+            "batch": 3,
+            "match": 0
+        }
+    ],
+    [
+        {
+            "num": 410,
+            "good": 300,
+            "bad": 40,
+            "noflag": 70,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 400,
+            "good": 266,
+            "bad": 60,
+            "noflag": 74,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 400,
+            "good": 266,
+            "bad": 60,
+            "noflag": 74,
+            "batch": 2,
+            "match": 0
+        },
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 2,
+            "match": 0
+        },
+        {
+            "num": 400,
+            "good": 266,
+            "bad": 60,
+            "noflag": 74,
+            "batch": 3,
+            "match": 1
+        },
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 3,
+            "match": 1
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 3,
+            "match": 1
+        },
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 4,
+            "match": 0
+        },
+        {
+            "num": 400,
+            "good": 266,
+            "bad": 60,
+            "noflag": 74,
+            "batch": 4,
+            "match": 0
+        }
+    ],
+    [
+        {
+            "num": 400,
+            "good": 266,
+            "bad": 60,
+            "noflag": 74,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 1,
+            "match": 0
+        }
+        ,
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 2,
+            "match": 1
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 2,
+            "match": 1
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 2,
+            "match": 1
+        }
+        ,
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 3,
+            "match": 0
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 3,
+            "match": 0
+        }
+    ],
+    [
+        {
+            "num": 500,
+            "good": 334,
+            "bad": 90,
+            "noflag": 76,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 1,
+            "match": 0
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 2,
+            "match": 1
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 2,
+            "match": 1
+        },
+        {
+            "num": 360,
+            "good": 232,
+            "bad": 65,
+            "noflag": 63,
+            "batch": 2,
+            "match": 1
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 2,
+            "match": 1
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 3,
+            "match": 0
+        },
+        {
+            "num": 420,
+            "good": 300,
+            "bad": 70,
+            "noflag": 50,
+            "batch": 3,
+            "match": 0
+        },
+        {
+            "num": 300,
+            "good": 217,
+            "bad": 43,
+            "noflag": 40,
+            "batch": 3,
+            "match": 0
+        }
+    ]
+]
+    
+}

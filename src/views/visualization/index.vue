@@ -2,7 +2,6 @@
   <el-row class="visual-content">
     <el-col :span="4">
       <system-title></system-title>
-      <date-picker></date-picker>
       <control-panel></control-panel>
       <overview></overview>
     </el-col>
@@ -17,10 +16,10 @@
 
 <script setup>
 import SystemTitle from '@/components/SystemTitle/index.vue';
-import DatePicker from '@/components/DatePicker/index.vue';
+// import DatePicker from '@/components/DatePicker/index.vue';
 import WhatIf from '@/components/WhatIf/index.vue';
 import ComparativeView from '@/components/ComparativeView/index.vue';
-import ControlPanel from '@/components/ControlPanel/index.vue';
+import ControlPanel from '@/components/ControlPanel';
 import Overview from '@/components/OverView/index.vue';
 
 </script>

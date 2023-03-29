@@ -29,7 +29,8 @@ export function getGantData (dateStart, dateEnd) {
 }
 export function getGanttDataFromNode (dateStart, dateEnd) {
   return request({
-    url: nodeURL + `/gantt?dateStart=${dateStart}&dateEnd=${dateEnd}`,
+    // url: nodeURL + `/gantt?dateStart=${dateStart}&dateEnd=${dateEnd}`,
+    url: baseURL + `/v2.0/NewGanttChartApi/${dateStart}/${dateEnd}/B/`,
     method: 'get'
   })
 }

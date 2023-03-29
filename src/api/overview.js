@@ -24,10 +24,17 @@ ALGORITHM_SELECT[ALGORITHM_OPTION.PCA_Cate] = 'CateVisualizationPCA';
 
 export function scattorData (algOpt, dateStart, dateEnd, data) {
   let algorithm = ALGORITHM_SELECT[algOpt];
-
   return request({
     url: baseURL + `/v1.0/model/${algorithm}/${dateStart}/${dateEnd}/`,
     method: 'post',
     data
   })
 }
+
+// export function getScatterData () {
+//   return request({
+//     // url: baseURL + `/v2.0/model/VisualizationCorrelation/${dateStart}/${dateEnd}/${nums}`,
+//     url: baseURL + `/v2.0/NewVistsneApi/2070100/2071000/A/`,
+//     method: 'get',
+//   })
+// }

@@ -24,7 +24,7 @@ export class WhatIfView extends SuperSVGView {
     this._temporalView = new TemporalView({ width: width, height: height - TEMPORAL_HEIGHT, moveY: TEMPORAL_HEIGHT }, this._container, this._tooltipInstance, 'temporal-view-root');
     this._trendView = new TrendView({ width: width, height: TREND_HEIGHT, moveY: 0 }, this._container, this._tooltipInstance, 'trend-view-root');
     this._ganttView = new GanttView({ width: width, height: GANTT_HEIGHT, moveY: TREND_HEIGHT }, this._container, this._tooltipInstance, 'gantt-view-root');
-    // this._temporalView.joinData(TEMPORAL, testData)
+    this._temporalView.joinData(TEMPORAL, testData);
     eventBus.on(MOVE_GANTT, ({diagData}) => {if(diagData && diagData.length !== 0){this._temporalView.joinData(TEMPORAL, diagData)}}); // 订阅, 当gantt视图拖动的时候，更新趋势视图的x轴小三角
   }
 
@@ -33,6 +33,7 @@ export class WhatIfView extends SuperSVGView {
       case TREND:
         this._trendView.joinData(TREND, value).render();
         eventBus.on(MOVE_GANTT, ({ domain }) => this._trendView.updateXSelect(domain)); // 订阅, 当gantt视图拖动的时候，更新趋势视图的x轴小三角
+        eventBus.on('batchNum', (d) => this._trendView.thumbnail(d));
         break;
       case GANTT:
         this._ganttView.joinData(GANTT, value).render();

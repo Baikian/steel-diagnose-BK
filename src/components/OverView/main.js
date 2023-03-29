@@ -15,6 +15,8 @@ export class OverView extends SuperSVGView {
     super({ width, height }, ele);
 
     this._container.attr('id', 'over-view');
+    this._grandpaNode = ele.parentNode.parentNode;
+    this._ele = d3.select(ele);
     
     this._margin = { top: 10, bottom: 10, left: 10, right: 10 };
     this._rawData = [];     // 原始数据
@@ -38,7 +40,7 @@ export class OverView extends SuperSVGView {
     });
     this._processExtent = detailsExtent(this._rawData);
     // console.log(this._processExtent)
-    console.log(this._rawData)
+    //console.log(this._rawData)
 
     const xList = this._rawData.map(d => d.x ? d.x : 0);
     const yList = this._rawData.map(d => d.y ? d.y : 0);
@@ -58,8 +60,7 @@ export class OverView extends SuperSVGView {
   }
 
   render() {
-    // console.log(this._paintData)
-    // console.log(this._idList)
+
     this._container.selectAll('.scatterGroup')
       .data(this._idList)
       .join(
@@ -73,6 +74,17 @@ export class OverView extends SuperSVGView {
 
   #enterHandle(group) {
     const that = this;
+
+    const grandepaNode = d3.select(that._grandpaNode);
+
+    grandepaNode.select('#tSNE')
+    .on('click', tSNEScatter)
+
+    grandepaNode.select('#PCA')
+    .on('click', PCAScatter)
+
+    grandepaNode.select('#MDS')
+    .on('click', MDSScatter)
 
     const scatterGroup = group.append('g')
       .attr('class', 'scatterGroup')
@@ -94,6 +106,73 @@ export class OverView extends SuperSVGView {
     scatterGroup
       .on('mouseenter', (e, d) => this.#mouseenterHandle(e, d))
       .on('mouseleave', (e, d) => this.#mouseleaveHandle(e, d))
+
+    //切换tSNE
+    function tSNEScatter(){
+      const xList = that._rawData.map(d => d.x ? d.x : 0);
+      const yList = that._rawData.map(d => d.y ? d.y : 0);
+      const xDomain = d3.extent(xList);
+      const yDomain = d3.extent(yList);
+      const xRange = [that._margin.left + 25, that._viewWidth - that._margin.right - 25];
+      const yRange = [that._margin.top + 25, that._viewHeight - that._margin.bottom - 25];
+      const tSNEscaleX = d3.scaleLinear(xDomain, xRange);
+      const tSNEscaleY = d3.scaleLinear(yDomain, yRange);
+
+      that._container.selectAll('.scatterGroup')
+      .transition()
+      .duration(1000)
+      .attr('transform', id => {
+        const datum = that._paintData[id];
+        const x = tSNEscaleX(datum.x);
+        const y = tSNEscaleY(datum.y);
+        return `translate(${[x, y]})`;
+      })
+    }
+
+    //切换PCA
+    function PCAScatter(){
+
+      const xList = that._rawData.map(d => d.pca_x ? d.pca_x : 0);
+      const yList = that._rawData.map(d => d.pca_y ? d.pca_y : 0);
+      const xDomain = d3.extent(xList);
+      const yDomain = d3.extent(yList);
+      const xRange = [that._margin.left + 25, that._viewWidth - that._margin.right - 25];
+      const yRange = [that._margin.top + 25, that._viewHeight - that._margin.bottom - 25];
+      const tSNEscaleX = d3.scaleLinear(xDomain, xRange);
+      const tSNEscaleY = d3.scaleLinear(yDomain, yRange);
+
+      that._container.selectAll('.scatterGroup')
+      .transition()
+      .duration(1000)
+      .attr('transform', id => {
+        const datum = that._paintData[id];
+        const x = tSNEscaleX(datum.pca_x);
+        const y = tSNEscaleY(datum.pca_y);
+        return `translate(${[x, y]})`;
+      })
+    }
+
+    //切换MDS
+    function MDSScatter(){
+      const xList = that._rawData.map(d => d.MDS_x ? d.MDS_x : 0);
+      const yList = that._rawData.map(d => d.MDS_y ? d.MDS_y : 0);
+      const xDomain = d3.extent(xList);
+      const yDomain = d3.extent(yList);
+      const xRange = [that._margin.left + 25, that._viewWidth - that._margin.right - 25];
+      const yRange = [that._margin.top + 25, that._viewHeight - that._margin.bottom - 25];
+      const tSNEscaleX = d3.scaleLinear(xDomain, xRange);
+      const tSNEscaleY = d3.scaleLinear(yDomain, yRange);
+
+      that._container.selectAll('.scatterGroup')
+      .transition()
+      .duration(1000)
+      .attr('transform', id => {
+        const datum = that._paintData[id];
+        const x = tSNEscaleX(datum.MDS_x);
+        const y = tSNEscaleY(datum.MDS_y);
+        return `translate(${[x, y]})`;
+      })
+    }
   }
 
   #updateHandle(group) {
@@ -105,6 +184,7 @@ export class OverView extends SuperSVGView {
   }
 
   #mouseenterHandle(event, id) {
+    const that = this;
     const datum = this._paintData[id];
     const contentWidth = 100;
     scatterTooltip && scatterTooltip.showTooltip({
@@ -112,13 +192,13 @@ export class OverView extends SuperSVGView {
       x: event.pageX, y: event.pageY - 2,
       direction: dir.up,
       displayText: false,
-      chartFun: curry(paintContent, datum.details, this._processExtent),
+      chartFun: curry(paintContent, datum, this._processExtent),
       box: { width: contentWidth * 2, height: contentWidth },
     })
 
     function paintContent(data, extent, group) {
       const instance = new ProcessView({ width: contentWidth * 2, height: contentWidth}, group, `${id}-content`);
-      instance.joinData(data, extent).render();
+      instance.joinData(data, extent, that._scaleR).render();
     }
   }
 

@@ -3,16 +3,6 @@ export function createElement(g, tag, attrs){
   let element = g.append(tag);
   return updateElement(element, attrs);
 }
-//data enter - update - exit
-//https://observablehq.com/@cengchengcc/bindelement
-export function bindElement(tag, initAttrs, t, enterAttrs, updateAttrs, exitAttrs, removeAttrs){
-  return [enter => createElement(enter, tag, initAttrs)
-      .call(g => updateElement(g.transition(t), enterAttrs)),
-    update => updateElement(update, updateAttrs)
-      .call(g => updateElement(g.transition(t), {...initAttrs, ...enterAttrs})),
-    exit => updateElement(exit, exitAttrs)
-      .call(g => updateElement(g.transition(t), removeAttrs).remove())]
-}
 
 export function updateElement(element, attrs){
   for(let item in attrs){
@@ -25,6 +15,16 @@ export function updateElement(element, attrs){
     }
   }
   return element;
+}
+//data enter - update - exit
+//https://observablehq.com/@cengchengcc/bindelement
+export function bindElement(tag, initAttrs, t, enterAttrs, updateAttrs, exitAttrs, removeAttrs){
+  return [enter => createElement(enter, tag, initAttrs)
+      .call(g => updateElement(g.transition(t), enterAttrs)),
+    update => updateElement(update, updateAttrs)
+      .call(g => updateElement(g.transition(t), {...initAttrs, ...enterAttrs})),
+    exit => updateElement(exit, exitAttrs)
+      .call(g => updateElement(g.transition(t), removeAttrs).remove())]
 }
 
 export function updateStyles(element, styles){

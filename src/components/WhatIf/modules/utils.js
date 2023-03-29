@@ -12,7 +12,7 @@ import { getOneDimensionalData } from '@/api/diagnosis';
 /**
  * Calculate what the transform should be to achieve the mocked scale
  */
-export function getTransformFromXScales (initialScale, frameScale, range = initialScale.range()) {
+export function getTransformFromXScales(initialScale, frameScale, range = initialScale.range()) {
   // For dates, get the time instead of the date objects
   const initialDomain = initialScale.domain().map(d => d.getTime());
   const frameDomain = frameScale.domain().map(d => d.getTime());
@@ -45,9 +45,9 @@ export function getTransformFromXScales (initialScale, frameScale, range = initi
 // GanttView: 批次规格视图显示的指标
 export const infoTarget = ['tgtthickness', 'tgtwidth', 'tgtlength'];
 export const infoTargetMap = {
-  tgtlength: {name: "L", unit: "m"},
-  tgtwidth: {name: "W", unit: "m"},
-  tgtthickness: {name: "T", unit: "mm"},
+  tgtlength: { name: "L", unit: "m" },
+  tgtwidth: { name: "W", unit: "m" },
+  tgtthickness: { name: "T", unit: "mm" },
 }
 
 /**
@@ -77,12 +77,14 @@ export function allInfoData(data) {
       const plates = dat.map(e => e.detail).flat();
       const batch_label = d3.groups(plates, d => d.flag_lable).sort((a, b) => a[0] - b[0]);
       const color = getColor(
-        batch_label[0] ? batch_label[0][1].length : 0, 
-        batch_label[1] ? batch_label[1][1].length : 0, 
+        batch_label[0] ? batch_label[0][1].length : 0,
+        batch_label[1] ? batch_label[1][1].length : 0,
         batch_label[2] ? batch_label[2][1].length : 0);
       const detail = getPlatesDetail(plates);
       const infoData = getInfoTargetData(plates, infoExtent);  // 计算这个块的规格数据
       const ID = `${batIdx}-${cate}`;
+      //去掉序号
+      // const ID = `${cate}`;
       result.push({
         batch: batIdx,
         id: ID,
@@ -96,14 +98,14 @@ export function allInfoData(data) {
         color: color,
       });
     }
-    
+
     if (noMerge.length) {
       noMerge.sort((a, b) => b.total - a.total);
       const plates = noMerge.map(e => e.detail).flat();
       const batch_label = d3.groups(plates, d => d.flag_lable).sort((a, b) => a[0] - b[0]);
       const color = getColor(
-        batch_label[0] ? batch_label[0][1].length : 0, 
-        batch_label[1] ? batch_label[1][1].length : 0, 
+        batch_label[0] ? batch_label[0][1].length : 0,
+        batch_label[1] ? batch_label[1][1].length : 0,
         batch_label[2] ? batch_label[2][1].length : 0);
       const detail = getPlatesDetail(plates);
       const infoData = getInfoTargetData(plates, infoExtent);  // 计算这个块的规格数据
@@ -162,7 +164,7 @@ function filterDisplayData(newX, data) {
 export function getBatchDisplayInfoData(newX, data) {
   const disData = filterDisplayData(newX, data);
   const newDisData = new Map();
-  
+
   const len = disData.length;
   if (len <= 0) return newDisData;
   let prevId = undefined;
@@ -172,7 +174,25 @@ export function getBatchDisplayInfoData(newX, data) {
     newDisData.set(item.id, item);
     prevId = item.id;
   }
-  
+
+  // console.log('看看什么样子', disData);
+  return newDisData;
+}
+
+export function getBatchDisplayInfoData_2(data) {
+  const newDisData = new Map();
+
+  const len = data.length;
+  if (len <= 0) return newDisData;
+  let prevId = undefined;
+  for (let i = 0; i < len; i++) {
+    const item = data[i];
+    item['prevId'] = prevId;
+    newDisData.set(item.id, item);
+    prevId = item.id;
+  }
+
+  // console.log('看看什么样子', disData);
   return newDisData;
 }
 
@@ -188,11 +208,11 @@ async function getDispalyDiagnosisData_1(newX, data, map, boundary) {
   const disData = filterDisplayData(newX, data).filter(d => map.get(d.id) > boundary ? false : true);
   const indexList = disData.map(d => d.id);
   const N = disData.length,
-        mid = Math.floor(N / 2);
+    mid = Math.floor(N / 2);
   let l = mid - 1, r = mid, count = 0;
   const MAX = 150;
   const res = [];
-  while((l >= 0 || r < N) && count < MAX) {
+  while ((l >= 0 || r < N) && count < MAX) {
     if (l >= 0) {
       count += disData[l].detail.length;
       res.push({
@@ -217,7 +237,7 @@ async function getDispalyDiagnosisData_1(newX, data, map, boundary) {
   reqUpids.forEach(d => cacheDiag.set(d.id, null)); // 先占坑
   if (reqUpids.length) {
     let reqDiag = (await getOneDimensionalData({ date: '2021-06', upids: reqUpids })).data;
-    
+
     // 缓存
     reqDiag.forEach(d => cacheDiag.set(d.id, d.data));
   }
@@ -227,7 +247,7 @@ async function getDispalyDiagnosisData_1(newX, data, map, boundary) {
     data: cacheDiag.get(d.id),
   })).filter(d => d.data && d.data.length !== 0)
   // console.log('in function: ', toDiag)
-  
+
   // 往诊断视图发
   eventBus.emit(MOVE_GANTT, { diagData: toDiag });
 }
@@ -247,3 +267,5 @@ export function comeFromRight(minScale, maxScale, data) {
 
   return time >= minDomain[1] && time <= maxDomain[1] ? true : false;
 }
+
+// 获取scatter方法

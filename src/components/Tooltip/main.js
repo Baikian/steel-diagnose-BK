@@ -113,7 +113,7 @@ export default class TooltipClass extends SuperSVGView {
     }
 
     parentNode.selectAll('*').remove();
-    console.log('id变更了', '方向是: ', direction)
+    // console.log('id变更了', '方向是: ', direction)
     this._contentId = id;
     this._direction = direction;
     const tooltip = parentNode

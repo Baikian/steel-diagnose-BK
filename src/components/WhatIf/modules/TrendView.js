@@ -50,9 +50,9 @@ export default class TrendView extends SuperGroupView {
     let maxValue = d3.max(
       this._rawData.good_flag,
       (d, i) => d + this._rawData.bad_flag[i] + this._rawData.no_flag[i]);
-    
+
     this._container.selectChildren().remove();  // 先清空container
-    
+
     const options = {
       width: this._viewWidth,
       height: this._viewHeight,
@@ -61,10 +61,14 @@ export default class TrendView extends SuperGroupView {
       colors: labelColor,
     }
     this.#renderStackBar(this._stackData, options);
+    this.#updateThumbnail();
+
     return this;
   }
 
   updateXSelect(disDomain) {  // 提示gantt图显示的区域
+
+    // console.log('这里运行了吗');
     if (!disDomain) return;
 
     // this._container.selectAll('.zoom-range')
@@ -89,12 +93,14 @@ export default class TrendView extends SuperGroupView {
     }
   }
 
+
+  //生成趋势柱状图，以及刷选交互
   #renderStackBar(data, {
     width = 640, // outer width, in pixels
     height, // outer height, in pixels
-    marginTop = 10,
+    marginTop = 0,
     marginRight = 0,
-    marginBottom = 10,
+    marginBottom = 20,
     marginLeft = 0,
     yDomain, // [ymin, ymax]
     yRange = [height - marginBottom, marginTop], // [bottom, top]
@@ -104,10 +110,10 @@ export default class TrendView extends SuperGroupView {
     colors = d3.schemeTableau10, // array of colors
   } = {}) {
     const that = this;
-    const barGroup = this._container.append('g')
+    const barGroup = this._container.append('g')    //柱状图在这个g里面
       .attr('class', 'trend-stack-bar-group')
       .attr('transform', `translate(${[marginLeft, marginTop]})`);
-    
+
     const xScale = d3.scaleBand(xDomain, xRange).paddingInner(yPadding);
     const yScale = d3.scaleLinear(yDomain, yRange);
     this._xScale = d3.scaleTime([new Date(xDomain[0]), new Date(xDomain[xDomain.length - 1])], xRange);
@@ -116,26 +122,26 @@ export default class TrendView extends SuperGroupView {
       .selectAll('.stack-bar')
       .data(data)
       .join('g')
-        .attr('class', (_, i) => `stack-bar-${this._key[i]}`)
-        .attr('fill', (_, i) => colors[i])
+      .attr('class', (_, i) => `stack-bar-${this._key[i]}`)
+      .attr('fill', (_, i) => colors[i])
       .selectAll('.bar-rect')
       .data(d => d)
       .join('rect')
-        .attr('x', (_, i) => xScale(xDomain[i]))
-        .attr('y', ([y1, y2]) => Math.min(yScale(y1), yScale(y2)))
-        .attr('height', ([y1, y2]) => Math.abs(yScale(y1) - yScale(y2)))
-        .attr('width', xScale.bandwidth())
-        .attr('opacity', 0.2);
+      .attr('x', (_, i) => xScale(xDomain[i]))
+      .attr('y', ([y1, y2]) => Math.min(yScale(y1), yScale(y2)))
+      .attr('height', ([y1, y2]) => Math.abs(yScale(y1) - yScale(y2)))
+      .attr('width', xScale.bandwidth())
+      .attr('opacity', 0.2);
 
     const brush = d3.brushX()
       .extent([[marginLeft, marginTop], [width - marginRight, height - marginBottom]])
-      .on('start brush', ({selection}) => that.#brushing(selection, bar, xScale))
-      .on('end', ({selection}) => that.#brushEnd(selection, xDomain, xScale));
+      .on('start brush', ({ selection }) => that.#brushing(selection, bar, xScale))
+      .on('end', ({ selection }) => that.#brushEnd(selection, xDomain, xScale));
 
     barGroup.append('g')
       .attr('class', 'trend-brush')
       .call(brush)
-      // .call(brush.move, [3, 5].map(x))
+    // .call(brush.move, [3, 5].map(x))
   }
 
   #brushing(selection, eles, xScale) {
@@ -148,7 +154,7 @@ export default class TrendView extends SuperGroupView {
       }
       eles.attr('opacity', d => computedOpacity(d) ? 1 : 0.2);
     }
-    
+
     let brushGroup = this._container.select('.trend-brush');
     brushGroup.call(g => this.#brushHandle.call(this, g, selection));
   }
@@ -165,7 +171,7 @@ export default class TrendView extends SuperGroupView {
 
   #brushHandle(g, selection) {
     g.selectAll(".handle--custom")
-      .data([{type: "w"}, {type: "e"}])
+      .data([{ type: "w" }, { type: "e" }])
       .join(
         enter => {
           enter.append("path")
@@ -175,12 +181,12 @@ export default class TrendView extends SuperGroupView {
             .attr("d", (_, i) => Boundary.brush({
               width: 10,
               height: this._viewHeight - this._margin.top - this._margin.bottom,
-              direction: i === 0 ? 'left' : 'right' 
+              direction: i === 0 ? 'left' : 'right'
             }))
         }
       )
       .attr("display", selection === null ? "none" : null)
-      .attr("transform", selection === null ? null : (d, i) => `translate(${selection[i]},${this._margin.top})`)
+      .attr("transform", selection === null ? null : (d, i) => `translate(${selection[i]},${this._margin.top - 10})`)
   }
 
   #filterXSelectData(_rawData, disDomain) {
@@ -199,15 +205,15 @@ export default class TrendView extends SuperGroupView {
   }
 
   #renderXSelectBar(total, paintData, disDomain) {
-    const width = 22;   // 小圆圈的尺寸
-    const tranY = this._viewHeight;
+    const width = 20;   // 小圆圈的尺寸
+    const tranY = this._viewHeight - 8;
 
     // 中间的棍
-    const rectHeight = width;
+    const rectHeight = width - 8;
     const rectWidth = this._xScale(disDomain[1]) - this._xScale(disDomain[0]);
     const linkGroup = this._container.append('g')
       .attr('class', 'link-group')
-      .attr('transform', `translate(${this._xScale(disDomain[0])}, ${tranY})`)
+      .attr('transform', `translate(${this._xScale(disDomain[0]) - 40}, ${tranY - 1})`)
     linkGroup.append('rect')
       .attr('width', rectWidth)
       .attr('height', rectHeight)
@@ -225,7 +231,7 @@ export default class TrendView extends SuperGroupView {
       .data(paintData)
       .join('g')
       .attr('class', 'zoom-range')
-      .attr('transform', (_, i) => `translate(${this._xScale(disDomain[i])}, ${tranY})`)
+      .attr('transform', (_, i) => `translate(${this._xScale(disDomain[i]) - 40}, ${tranY - 5})`)
     rangeGroup.append('circle')
       .attr('r', width / 2)
       .attr('fill', (_, i) => labelColor[i])
@@ -246,15 +252,82 @@ export default class TrendView extends SuperGroupView {
     const rectWidth = this._xScale(disDomain[1]) - this._xScale(disDomain[0]);
 
     const linkGroup = this._container.select('.link-group');
-    linkGroup.attr('transform', `translate(${this._xScale(disDomain[0])}, ${tranY})`);
+    linkGroup.attr('transform', `translate(${this._xScale(disDomain[0])}, ${tranY + 8})`);
     linkGroup.select('rect').attr('width', rectWidth);
     const text = linkGroup.select('text')
     text.text(total);
     const { width: textW, height: textH } = text.node().getBBox();
-    text.attr('transform', `translate(${[(rectWidth - textW) / 2, (rectHeight + textH) / 2 - 2]})`);
+    text.attr('transform', `translate(${[(rectWidth - textW) / 2, (rectHeight + textH) / 2 - 2 - 4]})`);
 
     const rangeGroup = this._container.selectAll('.zoom-range');
-    rangeGroup.attr('transform', (_, i) => `translate(${this._xScale(disDomain[i])}, ${tranY})`)
+    rangeGroup.attr('transform', (_, i) => `translate(${this._xScale(disDomain[i])}, ${tranY + 4})`)
     this._container.selectAll('.range-text').text((_, i) => paintData[i]);
+  }
+
+  //缩略图
+  thumbnail() {
+
+    const distance = 18;
+
+    const thumbnailBox = this._container.append('g')
+      .attr('class', 'thumbnailBox')
+      .attr('transform', `translate(${[this._viewWidth / 2, this._viewHeight + 10]})`)
+
+    thumbnailBox
+      .append('rect')
+      .attr('transform', `translate(${[-distance / 2, 0]})`)
+      .attr('class', 'slider')
+      .attr('fill', 'rgb(245, 245, 245)')
+      .attr('stroke-width', 1)
+      .attr('stroke', 'rgb(210, 210, 210)')
+      .attr('width', distance * 3)
+      .attr('height', 15)
+
+    thumbnailBox.selectAll("circle")
+      .data([0, 1, 2, 3, 4, 5])
+      .join('circle')
+      .attr('r', '2.5')
+      .attr('opacity', (_, i) => {
+        if (i < 3) {
+          return 0.7
+        }
+        else {
+          return 0.2
+        }
+      })
+      .attr('transform', (_, i) => `translate(${[distance * i, 7.5]})`)
+
+
+  }
+  //缩略图更新
+  #updateThumbnail() {
+    const distance = 18;
+
+    eventBus.on('发往Trend', (d) => {
+
+      const thumbnailBox = d3.select('.thumbnailBox');
+      let curArray = d.data;
+      let length = curArray.length;
+
+      thumbnailBox.select('.slider')
+        .transition()
+        .duration(200)
+        .ease(d3.easeLinear)
+        .attr('width', distance * length)
+        .attr('transform', `translate(${[-distance / 2 + distance * d.data[0], 0]})`)
+
+      thumbnailBox.selectAll("circle")
+        .transition()
+        .duration(100)
+        .ease(d3.easeLinear)
+        .attr('opacity', (_, i) => {
+          if (i >= curArray[0] && i <= curArray[length - 1]) {
+            return 0.7
+          }
+          else {
+            return 0.2
+          }
+        })
+    })
   }
 }

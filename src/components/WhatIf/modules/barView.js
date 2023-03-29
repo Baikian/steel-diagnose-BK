@@ -176,7 +176,7 @@ export class riverView{
   }
 
   render(){
-    this.#initScale();
+    // this.#initScale();
     this.#initAttrs();
     if(this._pattern === 'river'){
       this.#renderRiver()
