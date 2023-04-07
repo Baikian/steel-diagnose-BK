@@ -10,7 +10,7 @@
       <what-if class="what-if-content"></what-if>
     </el-col>
     <el-col :span="4">
-      <comparative-view></comparative-view>
+      <comparative-view class="comparative-view"></comparative-view>
     </el-col>
   </el-row>
 </template>
@@ -21,7 +21,7 @@ import WhatIf from '@/components/WhatIf/index.vue';
 import ComparativeView from '@/components/ComparativeView/index.vue';
 import ControlPanel from '@/components/ControlPanel';
 import Overview from '@/components/OverView/index.vue';
-import Parallel from '@/components/ControlPanel-2/index.vue';
+import Parallel from '@/components/ControlPanel-3/index.vue';
 
 </script>
 
@@ -29,13 +29,14 @@ import Parallel from '@/components/ControlPanel-2/index.vue';
 .visual-content {
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   font-size: 14px;
-  color: #6d7885;
+  background-color: #455964;
 }
 .what-if-content {
-  margin: 0px 10px;
+  margin: 4px 0px 4px 4px;
 }
 
-.el-rol {
-  margin-left: 100px;
+.comparative-view {
+  margin: 4px 4px 4px 4px;
 }
+
 </style>

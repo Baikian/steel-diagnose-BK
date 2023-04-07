@@ -98,7 +98,7 @@ export default class GanttView extends SuperGroupView {
       this._curIndex[i] = 0;
     })
 
-    const numScale = d3.scaleLinear().domain([0, 500]).range([3, 8]);
+    const numScale = d3.scaleLinear().domain([0, 500]).range([3, 5]);
     this._infoDataGroup.forEach((d, i) => {
       let num = 0;
       for (let item in d) {
@@ -109,7 +109,7 @@ export default class GanttView extends SuperGroupView {
           d[item].curNum = d[item].detail.length;
         }
         else {
-          d[item].prevH = d[item - 1].prevH + d[item - 1].curH;
+          d[item].prevH = d[item - 1].prevH + d[item - 1].curH - 1;
           d[item].curH = numScale(d[item].detail.length);
           d[item].prevNum = d[item - 1].prevNum + d[item - 1].curNum;
           d[item].curNum = d[item].detail.length;

@@ -1,0 +1,26 @@
+{
+    "tgtwidth": [
+        3.097,
+        3.897
+    ],
+    "tgtlength": [
+        13.532,
+        19.822
+    ],
+    "tgtthickness": [
+        0.05001,
+        0.05001
+    ],
+    "slabthickness": [
+        0.349,
+        0.357
+    ],
+    "tgttmplatetemp": [
+        800.0,
+        800.0
+    ],
+    "tgtdischargetemp": [
+        1120.0,
+        1120.0
+    ]
+}

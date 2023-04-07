@@ -136,7 +136,7 @@ export default class TrendView extends SuperGroupView {
       .selectAll('.bar-rect')
       .data(d => d)
       .join('rect')
-      .attr('class','bar-rect')
+      .attr('class', 'bar-rect')
       .attr('x', (_, i) => xScale(xDomain[i]))
       .attr('y', ([y1, y2]) => Math.min(yScale(y1), yScale(y2)))
       .attr('height', ([y1, y2]) => Math.abs(yScale(y1) - yScale(y2)))
@@ -351,23 +351,33 @@ export default class TrendView extends SuperGroupView {
       { id: 'Area', value: 2 }
     ];
 
-    const buttonGroup = this._container.append("g")
-      .attr('class', 'buttongroup')
-      .attr("transform", "translate(1155, 15)");
-
-    // 创建按钮
-    const buttons = buttonGroup.selectAll("rect")
+    const buttonGroup = this._container.selectAll(".buttonsgroup")
       .data(buttonsData)
       .enter()
-      .append("rect")
+      .append("g")
+      .attr('class', 'buttongroup')
+      .attr('id', d => `${d.id}`)
+      .attr("transform", (_, i) => `translate(${[1180, i * 25 + 15]})`)
+
+    // 创建按钮
+    const buttonsrect = buttonGroup.append("rect")
       .attr('id', d => `${d.id}`)
       .attr("x", 0)
-      .attr("y", function (d, i) {
-        return i * 30;
-      })
+      .attr("y", 0)
       .attr("width", 30)
-      .attr("height", 20)
-      .attr("fill", "gray")
+      .attr("height", 15)
+      .attr("fill", "white")
+      .attr('stroke', '#94a7b7')
+      .attr("rx", 5)
+      .attr("ry", 5);
+
+    const buttonstext = buttonGroup.append("text")
+      .attr("x", 5)
+      .attr("y", 10)
+      .text(d => d.id)
+      .attr("fill", "#94a7b7")
+      .attr("font-size", 10)
+      .attr("font-family", "Gill Sans,Gill Sans MT,Calibri,Trebuchet MS,sans-serif")
       .attr("rx", 5)
       .attr("ry", 5);
 

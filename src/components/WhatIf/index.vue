@@ -114,23 +114,7 @@ watch(time, () => {
 @import url('@/assets/style/MyCard.scss');
 
 #WhatIfMain {
-  height: 1010px;
-}
-.title-background {
-  border-top: 40px solid #455964;
-  border-left: 0px solid transparent;
-  border-right: 40px solid transparent;
-  height: 0;
-  width: 160px;
+  height: 1011px;
 }
 
-.title-text {
-  padding-left: 5px;
-  color: white;
-  font-size: 19px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-weight: bolder;
-  justify-content: center;
-  align-content: center;
-}
 </style>

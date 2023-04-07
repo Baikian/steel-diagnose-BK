@@ -30,10 +30,17 @@ export default class InfoView extends SuperGroupView {
     this._offset = undefined; // 规格信息group相对于gantt的偏移量
     this._rawData = undefined;  // 原始数据
     this._extent = undefined;   // 规格范围
+    this._color = {
+      'good_flag': '#94a7b7',
+      'bad_flag': '#c65b24',
+      'no_flag': '#71797e'
+    }
+    this._maxKey = undefined;
   }
 
   joinData(value, extent) {
     this._rawData = value;
+    console.log('this._rawData', this._rawData);
     this._extent = extent;
     return this;
   }
@@ -51,15 +58,38 @@ export default class InfoView extends SuperGroupView {
   }
 
   #renderBackground() {
+
+    //求好、坏、无标签的最大值
+    const g_b_n = {
+      'good_flag': this._rawData.good_flag,
+      'bad_flag': this._rawData.bad_flag,
+      'no_flag': this._rawData.no_flag
+    }
+
+    let maxKey = undefined;
+    let maxValue = -Infinity;
+
+    for (let key in g_b_n) {
+      if (g_b_n[key] > maxValue) {
+        maxKey = key;
+        maxValue = g_b_n[key];
+      }
+    }
+    this._maxKey = maxKey;
     //框
     this._container.append('rect')
       .attr('width', this._viewWidth)
       .attr('height', this._viewHeight)
       // .attr('stroke', this._rawData.color)
-      .attr('stroke', "#7C8C99")
+      .attr('stroke', this._color[this._maxKey])
       .attr('stroke-width', 2)
-      .attr("stroke-opacity", 0.4)
       .attr('fill', 'white')
+
+    this._container.append('rect')
+      .attr('width', 12)
+      .attr('height', 5)
+      .attr('fill', 'white')
+      .attr('transform', `translate(${[39, -3]})`)
 
     //钢种text
     this._container.append('text')
@@ -193,7 +223,7 @@ export default class InfoView extends SuperGroupView {
     let curData = [
       { x: this._width / 2 - curX - 0, y0: 0, y1: 0 },
       { x: this._width / 2 + curX + 0, y0: 0, y1: -Y1 * 3.5 },
-      { x: this._width + 10, y0: initH + prevH + curH, y1: initH + prevH }
+      { x: this._width + 10, y0: initH + prevH + curH - 1, y1: initH + prevH - 1 }
     ];
 
     const area = d3.area()
@@ -210,13 +240,16 @@ export default class InfoView extends SuperGroupView {
     //斜线
     this._container.append("path")
       .datum(curData)
-      .attr("class", "prev")
+      .attr('fill', this._color[this._maxKey])
+      .attr("class", "cur")
       .attr("d", area);
 
 
     //后续建议改成一个g包裹住
     this._container.append('rect')
-      .style("fill", "rgb(111,111,111)")
+      .style("fill", "white")
+      .attr('stroke', 'black')
+      .attr('stroke-width', 1)
       .attr('x', 103)
       .attr('y', -45)
       .attr('rx', 4)
@@ -229,18 +262,18 @@ export default class InfoView extends SuperGroupView {
       fontSize = `9px`,
       fontFamily = GillSans;
 
-    // 创建一个SVG路径元素，使用三角形的顶点坐标来定义路径
+    //三角
     this._container.append("path")
       .attr("d", "M" + vertices.join("L") + "Z")
       .style("fill", "rgb(111,111,111)");
 
     this._container.append("text")
-      .text(d => {
+      .text(() => {
         return `Bad. ${this._rawData.bad_flag}`;
       })
       .attr('x', 107)
       .attr('y', -35)
-      .attr('fill', 'white')
+      .attr('fill', 'black')
       .style('font-family', fontFamily)
       .style('font-size', fontSize)
       .style('font-style', 'normal')
@@ -249,8 +282,8 @@ export default class InfoView extends SuperGroupView {
     //
 
     const data = [
-      { x: 140, y: -31},
-      { x: 150, y: -40}
+      { x: 140, y: -31 },
+      { x: 150, y: -40 }
     ];
 
     const line = d3.line()
@@ -260,13 +293,13 @@ export default class InfoView extends SuperGroupView {
     this._container.append('path')
       .datum(data)
       .attr('fill', 'none')
-      .attr('stroke', 'white')
+      .attr('stroke', 'black')
       .attr('stroke-width', 1)
       .attr('d', line);
 
 
     this._container.append('rect')
-      .style("fill", "white")
+      .style("fill", "black")
       .attr('x', 107)
       .attr('y', -32)
       .attr('height', 1)
@@ -278,7 +311,7 @@ export default class InfoView extends SuperGroupView {
       })
       .attr('x', 107)
       .attr('y', -20)
-      .attr('fill', 'white')
+      .attr('fill', 'black')
       .style('font-family', fontFamily)
       .style('font-size', fontSize)
       .style('font-style', 'normal')

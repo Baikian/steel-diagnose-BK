@@ -66,7 +66,7 @@ watch(scatterData, () => {
 @import url('@/assets/style/MyCard.scss');
 
 #OverviewMain {
-  height: 280px;
+  height: 290px;
 }
 
 #text {

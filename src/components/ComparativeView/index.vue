@@ -63,7 +63,7 @@ watch(comparativeData, () => {
 <style>
 @import url("@/assets/style/MyCard.scss");
 #ComparativeView {
-  height: 700px;
+  height: 950px;
 }
 #buttonDiv{
   position: relative;
