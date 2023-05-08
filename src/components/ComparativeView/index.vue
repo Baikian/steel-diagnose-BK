@@ -1,19 +1,15 @@
 <template>
-  <el-card class="box-card">
+  <el-card class="detail-box-card">
     <template #header>
       <div class="title-background">
-      <div class="title-text">
-        <span>ComparativeView</span>
+        <div class="title-text">
+          <span>Detail View</span>
+        </div>
       </div>
-    </div>
     </template>
-    <div id="ComparativeView">
-      <div id = 'buttonDiv'>
-        <span id = 'text'>sort by:</span>
-        <button class= 'button' id = 'yieldSort'>yield</button>
-        <button class= 'button' id = 'qualitySort'>quality</button>
-        <button class= 'button' id = 'matchSort'>match</button>
-      </div>
+    <div id="ComparativeView" :style="{ overflow: 'auto' }">
+      
+    
     </div>
   </el-card>
 </template>
@@ -21,68 +17,65 @@
 <script setup>
 import { onMounted, ref, watch, toRaw } from "vue-demi";
 import { ComparativeView } from "./main";
-import { getTooltipInstance } from "./modules/Series";
+// import { getTooltipInstance } from "./modules/Series";
 import TooltipClass from "@/components/Tooltip/main";
 import { cloneObject } from "@/utils";
-
+import test from "./test.json";
+import { Whatifview } from "./main";
 // 离线数据
 import comparativeDataMock from "@/data/data1.json";
-
+let renderInstance = null;
 let comparativeData = ref(0);
 onMounted(() => {
   // 模拟promise获取数据
   setTimeout(() => {
     comparativeData.value = comparativeDataMock.steelData;
   }, 500);
-});
-
-let renderInstance = null;
-onMounted(() => {
   const ele = document.getElementById("ComparativeView");
   const viewWidth = ele.offsetWidth;
   const viewHeight = ele.offsetHeight;
-  renderInstance = new ComparativeView(
+  renderInstance = new Whatifview(
     { width: viewWidth, height: viewHeight },
     ele
   );
-
-//   //鼠标悬停提示框
-//   // const eleParent = document.getElementById('ComparativeView');
-//   // const tooltip = new TooltipClass({ width: 200, height: 200 }, eleParent, 'global-tooltip');
-//   // getTooltipInstance(tooltip);
+  renderInstance.join(test).render();
 });
 
 // 这里开始绘制对比视图
 watch(comparativeData, () => {
   //const raw = toRaw(comparativeData.value);
   renderInstance.joinData(comparativeData.value);
-  renderInstance.render();
 });
 </script>
 
 <style>
 @import url("@/assets/style/MyCard.scss");
+.detail-box-card{
+  margin-top: 10px;
+  border-left: 0px;
+}
 #ComparativeView {
-  height: 950px;
+  height:933px;
 }
-#buttonDiv{
+#buttonDiv {
+  height: 250px;
   position: relative;
-  text-align:right;
+  text-align: right;
 }
-#text{
-   position: absolute;
+#text {
+  position: absolute;
   left: 5px;
 }
 .button {
-    background-color: #edeeed; /* Green */
-    border: 1px solid rgb(126, 131, 126);
-    border-radius: 4px;
-    color: rgb(8, 8, 8);
-    padding: 5px 10px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 13px;
-    cursor: pointer;
+  background-color: #edeeed; /* Green */
+  border: 1px solid rgb(126, 131, 126);
+  border-radius: 4px;
+  color: rgb(8, 8, 8);
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 13px;
+  cursor: pointer;
 }
 </style>

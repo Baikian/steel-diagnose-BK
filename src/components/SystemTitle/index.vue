@@ -1,6 +1,6 @@
 <template>
   <div class="system-title">
-    <span id = 'title-text'>What-If Analysis</span>
+    <span id = 'title-text'>Diagnose System</span>
   </div>
 </template>
 

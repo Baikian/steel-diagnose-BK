@@ -1,0 +1,241 @@
+[
+    {
+        "upid": "20704245000",
+        "toc": "2020-07-04 17:47:29",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave",
+            "rightWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704246000",
+        "toc": "2020-07-04 17:53:27",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave",
+            "rightWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704247000",
+        "toc": "2020-07-04 17:58:00",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave",
+            "rightWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704248000",
+        "toc": "2020-07-04 18:03:15",
+        "fqc_label": [
+            "horizonWave",
+            "leftWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704249000",
+        "toc": "2020-07-04 18:07:01",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave",
+            "rightWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 38.098,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704250000",
+        "toc": "2020-07-04 18:10:17",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704251000",
+        "toc": "2020-07-04 18:13:28",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave",
+            "rightWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704252000",
+        "toc": "2020-07-04 18:17:22",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave",
+            "rightWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704253000",
+        "toc": "2020-07-04 18:20:37",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave",
+            "rightWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704254000",
+        "toc": "2020-07-04 18:23:44",
+        "fqc_label": [
+            "horizonWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704255000",
+        "toc": "2020-07-04 18:27:13",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave",
+            "rightWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704256000",
+        "toc": "2020-07-04 18:30:44",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave",
+            "rightWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704257000",
+        "toc": "2020-07-04 18:34:17",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave",
+            "rightWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704258000",
+        "toc": "2020-07-04 18:37:29",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave",
+            "rightWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704259000",
+        "toc": "2020-07-04 18:40:41",
+        "fqc_label": [
+            "bend",
+            "horizonWave",
+            "leftWave",
+            "rightWave"
+        ],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 38.098,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704260000",
+        "toc": "2020-07-04 18:44:16",
+        "fqc_label": [],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    },
+    {
+        "upid": "20704261000",
+        "toc": "2020-07-04 18:48:22",
+        "fqc_label": [],
+        "platetype": "X80M",
+        "tgtwidth": 3.851,
+        "tgtlength": 37.498,
+        "tgtthickness": 0.01843,
+        "status_cooling": "0"
+    }
+]

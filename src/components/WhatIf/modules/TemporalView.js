@@ -13,6 +13,7 @@ import {
   createElement,
   queryIcon,
   pinIcon,
+  eventBus,
   getParentData,
   mergeColor,
   updateChildrenNodes,
@@ -20,8 +21,11 @@ import {
   createIcon
 } from "@/utils";
 
+import { checkProccess, checkProccess_2 } from './utils'
+
 import { barView, labelName, riverView } from "./barView";
 import mockdata from './mockData.json'
+
 
 export default class TemporalView extends SuperGroupView {
   constructor({
@@ -44,7 +48,7 @@ export default class TemporalView extends SuperGroupView {
       this._rawData = data.map(d => d.data);
       //issue 1：根据data自动计算label数量，并取得排序功能。
       this._labelName = labelName;
-      // console.log("initData", data)
+      console.log("initData", data)
     }
     else {  //更新数据
       // let newData = {};
@@ -59,7 +63,7 @@ export default class TemporalView extends SuperGroupView {
     this._batchDetails = {};
     this._upidDetails = {};
     this._mergeArray = [];
-    this._mingap = 50;//bar最小宽度
+    this._mingap = 15;//bar最小宽度
 
     for (let item in this._batchName) {
       let key = this._batchName[item],
@@ -143,7 +147,8 @@ export default class TemporalView extends SuperGroupView {
     this._merge_Height = this._mergeHeight + this._mergeMargin.top + this._mergeMargin.bottom;
 
     this._cardMargin = { top: 5, bottom: 5, left: 5, right: 5 };
-    this._cardWidth = -60 + this._barWidth + this._mergeWidth + this._cardMargin.left + this._cardMargin.right;
+    // this._cardWidth = this._barWidth + this._mergeWidth + this._cardMargin.left + this._cardMargin.right;
+    this._cardWidth = 1140;
 
     this._chartMargin = 15;
 
@@ -214,7 +219,6 @@ export default class TemporalView extends SuperGroupView {
 
     Object.keys(this._riverInstances).forEach(d => {
       if (this._currentKeys.indexOf(d) === -1) {
-        // console.log(d)
         delete this._riverInstances[d];
       }
     })
@@ -233,7 +237,7 @@ export default class TemporalView extends SuperGroupView {
     let keys = Object.keys(this._batchDetails);
     let range = Array.from(d3.cumsum(keys.map((_, i) => this._mergeArray[i])));
     range.unshift(0);
-
+    console.log('range', range);
     let rangeArray = d3.pairs(range);
     rangeArray.forEach((d, i) => {
       let singleData = this._batchDetails[keys[i]];
@@ -256,14 +260,30 @@ export default class TemporalView extends SuperGroupView {
     this.#renderDefsG();             //添加阴影
     this.#renderSingleRow();         //生成单个指标内容
 
+
+    eventBus.on('发往Gantt', (d) => {
+      let position = -d.data;
+      this._container
+        .transition()
+        .duration(400)
+        .ease(d3.easeLinear)
+        .attr('transform', `translate(${[position * 950, 15]})`)
+    })
+
     return this;
   }
 
   // 生成cardgroup以及背景，监听鼠标滚轮事件并调用reRender更新
   #renderGroup() {
-    this._cardGroup = this._container.append("g")
+    this._cardGroup = this._container
+      // .selectAll('g')
+      // .data([0, 1, 2, 3, 4, 5])
+      // .enter()
+      .append("g")
       .attr("class", "cardGroup")
-      .attr("transform", translate([330, -10]))
+      .attr("transform", (_, i) => {
+        return translate([30, 0])
+      })
       // rect是诊断的背景
       .call(g => g.append("rect")
         .attr("stroke", "none")
@@ -288,7 +308,8 @@ export default class TemporalView extends SuperGroupView {
         }
         this.reRender();
       })
-    this.#renderButtonGroup()
+
+    // this.#renderButtonGroup()
   }
 
   //重新计算布局，在renderGroup滚轮事件中调用
@@ -393,12 +414,12 @@ export default class TemporalView extends SuperGroupView {
           .attr("transform", d => translate([0, this._labelDetails[d].oldy]))
           .call(enter => enter.transition().duration(500).ease(d3.easeLinear).call(updateGroupFunc))
           .call(tar => createElement(tar, "rect", cardAttrs))
-          .call(tar => createElement(tar, "rect", columnGroupAttrs))
-          .call(tar => createElement(tar, "rect", circleGroupAttrs))
-          .call(tar => this.#nandinggeer(tar))
+          // .call(tar => createElement(tar, "rect", columnGroupAttrs))
+          // .call(tar => createElement(tar, "rect", circleGroupAttrs))
           .call(tar => this.#lineChart(tar))
-          .call(tar => this.#columnChart(tar))
-          // .call(tar => this.#joinBatchElement(tar))
+          // .call(tar => this.#columnChart(tar))
+          .call(tar => this.#labelName(tar))
+          .call(tar => this.#joinBatchElement(tar))
           // .call(tar => this.#joinBarElement(tar))
           .call(tar => this.#joinPinIcon(tar))
           .call(tar => this.#joinQueryIcon(tar)),
@@ -443,8 +464,7 @@ export default class TemporalView extends SuperGroupView {
       context = this,
       groupAttrs = {
         transform: d => {
-          // console.log(d, this._batchDetails[d], this._batchName)
-          return translate([this._batchDetails[d].xRange[0] + this._cardMargin.left + this._barWidth - 100, this._cardMargin.top + 45])
+          return translate([this._batchDetails[d].xRange[0] + this._cardMargin.left + this._barWidth - 150, this._cardMargin.top])
         },
         class: function (d) { return `label_${getParentData(this, 1)} batch_${d} batchElement` }
       },
@@ -470,9 +490,12 @@ export default class TemporalView extends SuperGroupView {
     group.selectAll(`.batchElement`).data(this._batchName, d => d)
       .join(
         enter => enter.append("g")
-          .attr("transform", d => translate([this._batchDetails[d].oldXRange[0], this._cardMargin.top]))
+          .attr("transform", d => {
+            // console.log('this._batchDetails[d]',this._batchDetails[d]);
+            return translate([this._batchDetails[d].oldXRange[0], this._cardMargin.top]);
+          })
           .call(enter => enter.transition().duration(500).ease(d3.easeLinear).call(updateGroupFunc))
-          .call(tar => createElement(tar, "rect", cardAttrs))
+          // .call(tar => createElement(tar, "rect", cardAttrs))
           .each(function (d) {
             let { width, height } = this.getBBox();
 
@@ -795,8 +818,18 @@ export default class TemporalView extends SuperGroupView {
   }
 
   //生成折线图
-  #lineChart(group) {
-    let context = this;
+  #lineChart(group,
+    {
+      context = this,
+      mingap = this._mingap,
+      groupAttrs = {
+        transform: d => {
+          return translate([this._batchDetails[d].xRange[0] + this._cardMargin.left + this._barWidth, 0])
+        },
+        class: function (d) { return `label_${getParentData(this, 1)} batch_${d} batchElement` }
+      },
+      updateGroupFunc = g => updateElement(g, groupAttrs),
+    } = {}) {
     let width = 310,
       height = 90,
       padding = {
@@ -806,16 +839,21 @@ export default class TemporalView extends SuperGroupView {
         left: 40
       };
 
-    let xScale = this._batchDetails["32-X80M"].xScale;
-
-
+    const that = this;
 
     group.selectAll('.linebox').data(this._batchName, d => d)
       .join(
         enter => enter.append('g')
           .attr('class', 'lineBox')
-          .attr('transform', translate([200, 0]))
+          .attr("transform", d => {
+            // console.log('this._batchDetails[d]', this._batchDetails[d]);
+            return translate([this._batchDetails[d].oldXRange[0], 0]);
+          })
+          .call(enter => enter.transition().duration(500).ease(d3.easeLinear).call(updateGroupFunc))
           .each(function (d) {
+
+            let xScale = that._batchDetails[d].xScale;
+
             let label = getParentData(this, 1), //getParentData(this, 1), getParentData(this, 0)
               indexDatum = context._labelDetails[label],
               batch = d,
@@ -824,9 +862,9 @@ export default class TemporalView extends SuperGroupView {
             if (lineDatum.filter(d => d !== undefined).length === 0) return;
 
             let lineBox = d3.select(this);
-            let xAxis = d3.axisBottom()
-              .scale(xScale)
-              .tickSize(5);
+            // let xAxis = d3.axisBottom()
+            //   .scale(xScale)
+            //   .tickSize(5);
 
             // lineBox.append('g')
             //   .call(xAxis)
@@ -838,7 +876,7 @@ export default class TemporalView extends SuperGroupView {
 
             let extent = d3.extent(lineDatum, d => d.value);
             let limit = [lineDatum[0].l, lineDatum[0].u]
-            const yDomain  = [
+            const yDomain = [
               Math.min(...extent, ...limit),
               Math.max(...extent, ...limit)
             ];
@@ -847,18 +885,18 @@ export default class TemporalView extends SuperGroupView {
               .domain(yDomain)
               .range([height - padding.bottom, padding.top]);
 
-            let yAxis = d3.axisLeft()
-              .scale(yScale)
-              .ticks(4);
+            // let yAxis = d3.axisLeft()
+            //   .scale(yScale)
+            //   .ticks(4);
 
-            lineBox.append('g')
-              .call(yAxis)
-              .attr("transform", translate([0, 5]));
+            // lineBox.append('g')
+            //   .call(yAxis)
+            //   .attr("transform", translate([0, 5]));
 
             //生成折线
             let curveline = d3.line()
               .x((e, f) => {
-                return xScale(e.upid) + (f === lineDatum.length - 1 ? 15 : 0)
+                return xScale(e.upid) + (f === lineDatum.length - 1 ? mingap : 0)
               })
               .y(e => yScale(e.value))
               // .curve(d3.curveCardinal.tension(0.3))(lineDatum)
@@ -876,7 +914,7 @@ export default class TemporalView extends SuperGroupView {
             let limitarea = d3.area()
               .y0(e => yScale(e.l))
               .y1(e => yScale(e.u))
-              .x((e, f) => xScale(e.upid) + (f === lineDatum.length - 1 ? 15 : 0))
+              .x((e, f) => xScale(e.upid) + (f === lineDatum.length - 1 ? mingap : 0))
               (lineDatum);
 
             lineBox.append("path")
@@ -888,12 +926,12 @@ export default class TemporalView extends SuperGroupView {
               .attr("stroke", "none")
               .attr("d", limitarea);
 
-            //生成小圈
+            //生成圆圈
             lineBox.selectAll(".mergeCircle")
               .data(lineDatum.filter(d => d.l > d.value || d.u < d.value))
               .join("circle")
               // .attr('transform', translate([20, 0]))
-              .attr('r', '5')
+              .attr('r', '3.5')
               .attr('class', 'mergeCircle')
               .attr('opacity', '1')
               .attr("fill", "rgb(221,181,188)")
@@ -943,6 +981,78 @@ export default class TemporalView extends SuperGroupView {
     //   .attr("fill", 'rgb(227, 173, 146)')
     //   .attr('opacity', '0.6')
     //   .attr("d", roseArc);
+  }
+
+  #labelName(group) {
+
+    const labelContainer = group.append('g')
+      .attr('transform', `translate(${[15, 0]})`)
+      .attr('class', 'labelContainer')
+
+
+    //生成背景rect
+    labelContainer.each(function () {
+      const currLable = d3.select(this);
+      currLable
+        .append('rect');
+    });
+
+    //生成指标名字
+    const textColor = { 'roll': '#8FA38B', 'heat': '#B09776', 'cool': '#7C8C99' } //轧制，加热，冷却
+    labelContainer
+      .append('text')
+      .text(d => d)
+      .attr('transform', `translate(${[30, 5]})`)
+      .attr('fill', d => {
+        const proccess = checkProccess_2(d)
+        return textColor[proccess];
+      })
+      .attr('stroke', d => {
+        const proccess = checkProccess_2(d)
+        return textColor[proccess];
+      })
+      .attr('stroke-width', '0.25')
+      .style('font-family', 'GillSans')
+      .style('font-size', '14px')
+      .style('font-style', 'italic')
+      .style('text-anchor', 'start')
+      .raise();
+
+    //获得指标名字宽度，设置背景rect属性
+    labelContainer.each(function () {
+      const currLable = d3.select(this);
+      const width = currLable.select('text').node().getComputedTextLength() + 10;
+      currLable
+        .select('rect')
+        .attr('width', width)
+        .attr('height', 20)
+        .attr('fill', 'white')
+        .attr('transform', `translate(${[25, -10]})`);
+    });
+
+    //图标图片及背景
+    labelContainer
+      .call(g =>
+        g.append('rect')
+          .attr('class', 'icon_background')
+          .attr('rx', 3)
+          .attr('ry', 3)
+          .attr('width', 24)
+          .attr('height', 24)
+          .attr('fill', 'white')
+          .attr('stroke', '#D3B58D')
+          .attr('stroke-width', 0.25)
+          .attr('transform', `translate(${[0, -12]})`)
+      )
+      .call(g =>
+        g.append('image')
+          .attr('class', 'lable_icon')
+          .attr('width', 18)
+          .attr('height', 18)
+          .attr('href', d => checkProccess(d))
+          .attr('transform', `translate(${[3, -10]})`)
+      )
+
   }
 
   //生成柱状图

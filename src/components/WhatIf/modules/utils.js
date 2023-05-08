@@ -8,6 +8,12 @@ import { useStore } from "vuex";
 import { MOVE_GANTT } from '../main';
 import { debounce, eventBus, getColor } from '@/utils';
 import { getOneDimensionalData } from '@/api/diagnosis';
+import { labelName } from "./barView";
+
+
+import heat from "../../../assets/images/heat.svg"
+import roll from '../../../assets/images/roll.svg'
+import cool from '../../../assets/images/ACCIcon.svg'
 
 /**
  * Calculate what the transform should be to achieve the mocked scale
@@ -41,6 +47,48 @@ export function getTransformFromXScales(initialScale, frameScale, range = initia
   return d3.zoomIdentity.translate(rangeXTranslation, 0).scale(k);
 }
 
+
+
+// 通过指标名判断工序
+export function checkProccess(str) {
+
+  const heatStart = labelName.indexOf("charging_temp_act");
+  const heatEnd = labelName.indexOf("t_6");
+  const rollStart = labelName.indexOf("pass");
+  const rollEnd = labelName.indexOf("finishtemptotal");
+  const coolStart = labelName.indexOf("avg_fct");
+  const coolEnd = labelName.indexOf("std_sct");
+
+  const strIndex = labelName.indexOf(str);
+
+  if (strIndex >= heatStart && strIndex <= heatEnd) {
+    return heat;
+  } else if(strIndex >= rollStart && strIndex <= rollEnd){
+    return roll;
+  } else if(strIndex >= coolStart && strIndex <= coolEnd){
+    return cool;
+  }
+}
+
+export function checkProccess_2(str) {
+
+  const heatStart = labelName.indexOf("charging_temp_act");
+  const heatEnd = labelName.indexOf("t_6");
+  const rollStart = labelName.indexOf("pass");
+  const rollEnd = labelName.indexOf("finishtemptotal");
+  const coolStart = labelName.indexOf("avg_fct");
+  const coolEnd = labelName.indexOf("std_sct");
+
+  const strIndex = labelName.indexOf(str);
+
+  if (strIndex >= heatStart && strIndex <= heatEnd) {
+    return 'heat';
+  } else if(strIndex >= rollStart && strIndex <= rollEnd){
+    return 'roll';
+  } else if(strIndex >= coolStart && strIndex <= coolEnd){
+    return 'cool';
+  }
+}
 
 // GanttView: 批次规格视图显示的指标
 export const infoTarget = ['tgtthickness', 'tgtwidth', 'tgtlength'];

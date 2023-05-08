@@ -26,6 +26,7 @@ export default class InfoView extends SuperGroupView {
     this._margin = { top: 0, bottom: 0, left: 0, right: 0 };
     this._width = width;
     this._height = height;
+    this._yield = undefined;
     this._xScale = undefined; // 大横轴的比例尺
     this._offset = undefined; // 规格信息group相对于gantt的偏移量
     this._rawData = undefined;  // 原始数据
@@ -38,9 +39,11 @@ export default class InfoView extends SuperGroupView {
     this._maxKey = undefined;
   }
 
-  joinData(value, extent) {
+  joinData(value, yieldGroup, extent) {
     this._rawData = value;
-    console.log('this._rawData', this._rawData);
+    this._yieldGroup = yieldGroup;
+    // console.log('this._rawData', this._rawData);
+    // console.log('this._yieldGroup', this._yieldGroup);
     this._extent = extent;
     return this;
   }
@@ -195,7 +198,7 @@ export default class InfoView extends SuperGroupView {
         .attr('text-anchor', 'middle')
         .attr('fill', d3.color('#cbdcea').darker(1)))
 
-    //左边的轴
+    // //左边的轴
     barGroup.append('g')
       .attr('transform', `translate(${[-strokeWidth + 8, -3]})`)
       .style("font-family", GillSans)
@@ -214,16 +217,20 @@ export default class InfoView extends SuperGroupView {
     const curH = this._rawData.curH;
     const curX = this._width / 2 - this._width / 2 * (-initH - prevH - curH) / (-initH - prevH - curH / 2);
     const Y1 = 2 * curX * (-initH - prevH - curH / 2) / this._width / 2;
+    const gatherH = this._yieldGroup.scaleH(this._rawData.sumNum);
+    const biasW = this._yieldGroup.scaleW(this._rawData.detail.length);
+    const biasH = biasW * (-initH - gatherH)/(90 - this._width/2 - biasW/2);
+    console.log('gatherH', biasW);
 
-    let prevData = [
-      { x: -10, y0: initH + prevH, y1: initH },
-      { x: 100, y0: initH + prevH, y1: initH }
+    let gatherData = [
+      { x: 90, y0: initH, y1: initH + gatherH },
+      { x: 200, y0: initH, y1: initH + gatherH }
     ];
 
-    let curData = [
-      { x: this._width / 2 - curX - 0, y0: 0, y1: 0 },
-      { x: this._width / 2 + curX + 0, y0: 0, y1: -Y1 * 3.5 },
-      { x: this._width + 10, y0: initH + prevH + curH - 1, y1: initH + prevH - 1 }
+    let linkData = [
+      { x: this._width / 2 - biasW/2, y0: -1, y1: -1 },
+      { x: this._width / 2 + biasW/2, y0: -1 - biasH, y1:  -1 },
+      { x: 90, y0: initH + gatherH - biasH, y1: initH + gatherH }
     ];
 
     const area = d3.area()
@@ -233,13 +240,14 @@ export default class InfoView extends SuperGroupView {
 
     //横线
     this._container.append("path")
-      .datum(prevData)
+      .datum(gatherData)
+      .attr('fill', '#7C8C99')
       .attr("class", "prev")
       .attr("d", area);
 
     //斜线
     this._container.append("path")
-      .datum(curData)
+      .datum(linkData)
       .attr('fill', this._color[this._maxKey])
       .attr("class", "cur")
       .attr("d", area);

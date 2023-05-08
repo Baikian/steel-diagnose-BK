@@ -93,9 +93,27 @@ export default class GanttView extends SuperGroupView {
       }
     })
     this._infoDataGroup.push(arr);
-
     this._infoDataGroup.forEach((_, i) => {
       this._curIndex[i] = 0;
+    })
+
+
+    this._yieldGroup =
+      this._infoDataGroup.map(d => d.map(e => e.detail.length)).map(d => {
+        const Object = {};
+        Object.cateSum = d.length;
+        Object.domain = d3.extent(d);
+        return Object;
+      })
+    console.log('this._yieldGroup', this._yieldGroup);
+
+    const cateDomain = d3.extent(this._infoDataGroup.map(d => d.length))
+    const yieldsumScale = d3.scaleLinear().domain(cateDomain).range([6, 8]);
+    this._yieldGroup.forEach(d => {
+      d.scaleH = d3.scaleLinear().domain([1, d.cateSum]).range([3, yieldsumScale(d.cateSum)]);
+    })
+    this._yieldGroup.forEach(d => {
+      d.scaleW = d3.scaleLinear().domain(d.domain).range([2, 3]);
     })
 
     const numScale = d3.scaleLinear().domain([0, 500]).range([3, 5]);
@@ -107,18 +125,20 @@ export default class GanttView extends SuperGroupView {
           d[item].curH = numScale(d[item].detail.length);
           d[item].prevNum = 0;
           d[item].curNum = d[item].detail.length;
+          d[item].sumNum = 1;
         }
         else {
           d[item].prevH = d[item - 1].prevH + d[item - 1].curH - 1;
           d[item].curH = numScale(d[item].detail.length);
           d[item].prevNum = d[item - 1].prevNum + d[item - 1].curNum;
           d[item].curNum = d[item].detail.length;
+          d[item].sumNum = d[item - 1].sumNum + 1;
         }
       }
     })
 
     // console.log('this._rawData', this._rawData);
-    // console.log('this._infoDataGroup', this._infoDataGroup);
+    console.log('this._infoDataGroup', this._infoDataGroup);
 
     let len = this._rawData.length;
     let xDomain = d3.extent(this._rawData, (d, i) => {
@@ -135,6 +155,8 @@ export default class GanttView extends SuperGroupView {
     // console.log('数据:', this._rawData);
 
     //this._container 父元素内建的g
+
+
 
     const that = this;
     // this._container.attr('transform', `translate(${[moveX, moveY]})`);
@@ -156,6 +178,7 @@ export default class GanttView extends SuperGroupView {
     this.#batchPosition(batchWidth, batchPosition);
     this._batchWidth = batchWidth;
     this._batchPositon = batchPosition;
+    console.log('this._batchPositon', this._batchPositon);
 
     this._infoDataGroup.forEach((d, i) => {
       for (let item in d) {
@@ -178,8 +201,8 @@ export default class GanttView extends SuperGroupView {
       }
       this._currentKeys.push(arr);
     })
-    console.log('_infoDataGroup', this._infoDataGroup);
-    console.log('this._currentKeys', this._currentKeys);
+    // console.log('_infoDataGroup', this._infoDataGroup);
+    // console.log('this._currentKeys', this._currentKeys);
 
 
 
@@ -193,7 +216,7 @@ export default class GanttView extends SuperGroupView {
     const ganttBatch = this._container.selectAll('.ganttBatch')
       .data(this._currentKeys, d => d.data)
       .join(enter => enter.append('g')
-        .attr('class', d => `ganttBatch`)
+        .attr('class', (d, i) => `ganttBatch`)
         .attr('id', (_, i) => i)
         .attr('transform', (_, i) => `translate(${batchPosition[i]}, ${this._margin.top + 5})`)
         // .attr('transform', translate([0, 0]))
@@ -237,6 +260,21 @@ export default class GanttView extends SuperGroupView {
           }
           that.#updateContent(d3.select(this), that._currentKeys[curID], e.deltaY, batchWidth)
         })
+        .on('mouseover', function (e) {
+          let id = Number(d3.select(this).attr('id'));
+          console.log('id', id);
+          d3.selectAll('.ganttBatch')
+            .attr('opacity', (d, i) => {
+              if (i = id) {
+                return 1;
+              } else {
+                return 0.5;
+              }
+            })
+        })
+        .on('mouseout', function (e) {
+        
+        })
       )
 
     this.#ganttEvent();
@@ -250,17 +288,18 @@ export default class GanttView extends SuperGroupView {
       // this._batchPositon = [];
       let length = that._batchWidth.length;
       const current_g = d3.select(this);
+      // console.log('current_g', current_g);
       const currentWidth = that._batchPositon[length - 1] + that._batchWidth[length - 1] + 10;
       const rightBorder = -(currentWidth);
       if (position >= 0 && event.deltaY < 0) {
         current_g
-          .attr('transform', `translate(${[0, 80]})`)
+          .attr('transform', `translate(${[0, 70]})`)
       }
       else if (position <= rightBorder && event.deltaY > 0) {
         current_g
           .transition()
           .duration(15)
-          .attr('transform', `translate(${[rightBorder, 80]})`)
+          .attr('transform', `translate(${[rightBorder, 70]})`)
       }
       else {
         //position= position+ event.deltaY / 5;
@@ -271,8 +310,9 @@ export default class GanttView extends SuperGroupView {
           .transition()
           .duration(200)
           .ease(d3.easeLinear)
-          .attr('transform', `translate(${[position, 80]})`)
+          .attr('transform', `translate(${[position, 70]})`)
       }
+      console.log('position', position);
       let curArray = new Array();
       that._batchPositon.forEach((d, i) => {
         let curPosition = d + position;
@@ -287,6 +327,17 @@ export default class GanttView extends SuperGroupView {
 
       event.preventDefault(); //组织默认事件，防止页面随滚轮上下滚动
     }
+
+    eventBus.on('发往Gantt', (d) => {
+      let position = -this._batchPositon[d.data]
+      const current_g = d3.select('#gantt-view-root');
+
+      current_g
+        .transition()
+        .duration(400)
+        .ease(d3.easeLinear)
+        .attr('transform', `translate(${[position + 8, 70]})`)
+    })
 
     return this;
   }
@@ -331,37 +382,37 @@ export default class GanttView extends SuperGroupView {
       .attr('stroke-width', 3)
       .attr('fill', 'white')
       .attr('x', 0)
-      .attr('y', 10)
+      .attr('y', 0)
       .attr('width', (d, i) => {
         return batchWidth[i];
       })
-      .attr('height', 165)
+      .attr('height', 175)
 
     group.append('rect')
       .attr('class', 'batchFrame-top')
-      .attr('stroke', 'white')
-      .attr('stroke-width', 3)
       .attr('fill', 'white')
       .attr('x', (d, i) => {
-        return 0;
+        return 30;
       })
-      .attr('y', 0)
+      .attr('y', -2)
+      .attr('width', 70)
+      .attr('height', 5)
       .attr('width', (d, i) => {
         return batchWidth[i];
       })
-      .attr('height', 13)
 
-    group.append('rect')
-      .attr('class', 'shelter')
-      // .attr('stroke', "#7C8C99")
-      // .attr('stroke-width', 3)
-      .attr('fill', 'white')
-      .attr('x', -9)
-      .attr('y', 0)
-      .attr('width', '8')
-      .attr('height', '180')
 
-    group.attr('fill', '#7C8C99')
+    // group.append('rect')
+    //   .attr('class', 'shelter')
+    //   // .attr('stroke', "#7C8C99")
+    //   // .attr('stroke-width', 3)
+    //   .attr('fill', 'white')
+    //   .attr('x', -9)
+    //   .attr('y', -3)
+    //   .attr('width', '8')
+    //   .attr('height', '180')
+
+    // group.attr('fill', '#7C8C99')
 
     // group.append('path')
     //   .attr('class', 'batch-boundary')
@@ -394,10 +445,11 @@ export default class GanttView extends SuperGroupView {
         .call(enter => updateGroupFunc(enter))
         .attr('custom--handle', function (d) {
           const data = that._infoDataGroup[d.key][d.data];
+          const yieldGroup = that._yieldGroup[d.key];
           // console.log('data', data);
           const id = data.id;
           const instance = new InfoView({ width: infoW, height: infoH }, d3.select(this), null, id);
-          instance.joinData(data, that._infoExtent)
+          instance.joinData(data, yieldGroup, that._infoExtent)
             .render();
         })
     }
@@ -430,9 +482,10 @@ export default class GanttView extends SuperGroupView {
         .attr('transform', d => `translate(${[that._infoDataGroup[d.key][d.data].X, transY]})`)
         .attr('custom--handle', function (d) {
           const data = that._infoDataGroup[d.key][d.data];
+          const yieldGroup = that._yieldGroup[d.key];
           const id = data.id;
           const instance = new InfoView({ width: infoW, height: infoH }, d3.select(this), null, id);
-          instance.joinData(data, that._infoExtent)
+          instance.joinData(data, yieldGroup, that._infoExtent)
             .render();
         })
     }

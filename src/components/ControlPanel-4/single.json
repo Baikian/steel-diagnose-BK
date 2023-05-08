@@ -1,0 +1,117 @@
+[
+
+    {
+        "tgtwidth": [
+            2.609,
+            2.617
+        ],
+        "tgtlength": [
+            25.563,
+            37.958
+        ],
+        "tgtthickness": [
+            0.01435,
+            0.01435
+        ],
+        "slabthickness": [
+            0.25,
+            0.25
+        ],
+        "tgttmplatetemp": [
+            770.0,
+            770.0
+        ],
+        "tgtdischargetemp": [
+            1120.0,
+            1120.0
+        ],
+        "bid": "2070202",
+        "cid": "48"
+    },
+
+    {
+        "tgtwidth": [
+            4.542,
+            4.582
+        ],
+        "tgtlength": [
+            12.917,
+            25.353
+        ],
+        "tgtthickness": [
+            0.02573,
+            0.02573
+        ],
+        "slabthickness": [
+            0.29,
+            0.3
+        ],
+        "tgttmplatetemp": [
+            770.0,
+            770.0
+        ],
+        "tgtdischargetemp": [
+            1140.0,
+            1140.0
+        ],
+        "bid": "2070310",
+        "cid": "10"
+    },
+    {
+        "tgtwidth": [
+            2.707,
+            3.037
+        ],
+        "tgtlength": [
+            23.877,
+            27.808
+        ],
+        "tgtthickness": [
+            0.03146,
+            0.03446
+        ],
+        "slabthickness": [
+            0.3,
+            0.3
+        ],
+        "tgttmplatetemp": [
+            750.0,
+            750.0
+        ],
+        "tgtdischargetemp": [
+            1050.0,
+            1050.0
+        ],
+        "bid": "2070312",
+        "cid": "19"
+    },
+
+    {
+        "tgtwidth": [
+            3.174,
+            4.149
+        ],
+        "tgtlength": [
+            37.713,
+            41.994
+        ],
+        "tgtthickness": [
+            0.01035,
+            0.01235
+        ],
+        "slabthickness": [
+            0.25,
+            0.25
+        ],
+        "tgttmplatetemp": [
+            770.0,
+            780.0
+        ],
+        "tgtdischargetemp": [
+            1120.0,
+            1130.0
+        ],
+        "bid": "2070322",
+        "cid": "63"
+    }
+]

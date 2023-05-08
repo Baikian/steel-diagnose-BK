@@ -54,7 +54,7 @@ export default class TrendView extends SuperGroupView {
     this._container.selectChildren().remove();  // 先清空container
     this._container.append('rect')
       .attr('width', 1250)
-      .attr('height', 100)
+      .attr('height', 90)
       .attr('fill', 'white')
       .attr('transform', `translate(${0, 0})`)
 
@@ -141,7 +141,7 @@ export default class TrendView extends SuperGroupView {
       .attr('y', ([y1, y2]) => Math.min(yScale(y1), yScale(y2)))
       .attr('height', ([y1, y2]) => Math.abs(yScale(y1) - yScale(y2)))
       .attr('width', xScale.bandwidth())
-      .attr('opacity', 0.2)
+      .attr('opacity', 0.8)
 
 
     const brush = d3.brushX()
@@ -282,7 +282,16 @@ export default class TrendView extends SuperGroupView {
 
     const thumbnailBox = this._container.append('g')
       .attr('class', 'thumbnailBox')
-      .attr('transform', `translate(${[this._viewWidth / 2, this._viewHeight - 25]})`)
+      .attr('transform', `translate(${[this._viewWidth / 2, this._viewHeight - 30]})`)
+
+
+    thumbnailBox
+      .append('rect')
+      .attr('transform', `translate(${[-distance / 2, 0]})`)
+      .attr('class', 'background')
+      .attr('fill', 'white')
+      .attr('width', distance * 6)
+      .attr('height', 15)
 
     thumbnailBox
       .append('rect')
@@ -308,6 +317,61 @@ export default class TrendView extends SuperGroupView {
       })
       .attr('transform', (_, i) => `translate(${[distance * i, 7.5]})`)
 
+    thumbnailBox.on('mousewheel', thumbnailSlide)
+    let position = 0; //记录g当前位置
+    let curData = 0;
+
+    function thumbnailSlide(event) {
+
+      if (position == 0 && event.deltaY < 0) {
+        thumbnailBox.select('.slider')
+          .attr('transform', `translate(${[-distance / 2, 0]})`)
+      }
+      else if (position == 3 && event.deltaY > 0) {
+        thumbnailBox.select('.slider')
+          .attr('transform', `translate(${[-distance / 2 + distance * position, 0]})`)
+      }
+      else {
+        thumbnailBox.select('.slider')
+          .attr('bilibili', function (d, i) {
+            if (event.deltaY > 0) {
+              position = position + 1;
+            }
+            else {
+              position = position - 1;
+            }
+          })
+          .transition()
+          .duration(200)
+          .ease(d3.easeLinear)
+          .attr('transform', `translate(${[-distance / 2 + distance * position, 0]})`)
+      }
+
+      if (curData != 0 && event.deltaY < 0) {
+        curData = curData - 1;
+      }
+      else if (curData != 3 && event.deltaY > 0) {
+        curData = curData + 1;
+      }
+
+      thumbnailBox.selectAll("circle")
+        .transition()
+        .duration(100)
+        .ease(d3.easeLinear)
+        .attr('opacity', (_, i) => {
+          if (i >= curData && i <= curData + 2) {
+            return 0.7
+          }
+          else {
+            return 0.2
+          }
+        })
+
+      console.log('curData', curData);
+      eventBus.emit('发往Gantt', { data: curData });
+
+      event.preventDefault();
+    }
 
   }
   //缩略图更新
@@ -357,7 +421,7 @@ export default class TrendView extends SuperGroupView {
       .append("g")
       .attr('class', 'buttongroup')
       .attr('id', d => `${d.id}`)
-      .attr("transform", (_, i) => `translate(${[1180, i * 25 + 15]})`)
+      .attr("transform", (_, i) => `translate(${[1220, i * 25 + 15]})`)
 
     // 创建按钮
     const buttonsrect = buttonGroup.append("rect")
