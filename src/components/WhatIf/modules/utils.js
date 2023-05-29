@@ -120,17 +120,25 @@ export function allInfoData(data) {
     const endTime = data[i].endTime;      // 批次endTime
     const merge = data[i].category.filter(d => d.merge_flag);
     const noMerge = data[i].category.filter(d => !d.merge_flag);
+    const bid = data[i].bid;
+    const cid = data[i].cid;
 
     let groups = d3.groups(merge, d => d.platetype);
+    console.log('groups', groups);
     for (let [cate, dat] of groups) {
       let good_flag = 0;
       let bad_flag = 0;
       let no_flag = 0;
+      let cids = [];
       dat.forEach((d, i) => {
         if(d.merge_flag == 'true'){
           good_flag = good_flag + d.good_flag;
           bad_flag = bad_flag + d.bad_flag;
           no_flag = no_flag + d.no_flag;
+          cids.push({
+            bid: d.bid,
+            cid: d.cid
+          })
         }
         else{
           good_flag = 3;
@@ -163,7 +171,8 @@ export function allInfoData(data) {
         color: color,
         good_flag: good_flag,
         bad_flag: bad_flag,
-        no_flag: no_flag
+        no_flag: no_flag,
+        cids: cids
       });
     }
 

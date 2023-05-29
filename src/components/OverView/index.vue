@@ -12,7 +12,8 @@
           <el-radio-button label="B" />
         </el-radio-group>
 
-        <el-select class='select' v-model="value" placeholder="select" :popper-append-to-body="false">
+        <el-select class='select' v-model="value" placeholder="select" :popper-append-to-body="false"
+          @change="handleChange">
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"
             :disabled="item.disabled" />
         </el-select>
@@ -31,11 +32,12 @@ import {
   Edit,
   Share,
 } from '@element-plus/icons-vue'
+import { eventBus } from '@/utils';
 import { onMounted, reactive, watch, ref, toRaw } from "vue-demi";
 import { OverView, getTooltipInstance } from './main';
 import TooltipClass from "@/components/Tooltip/main"
 // 离线数据
-import scatter from '@/data/scatter.json';
+import scatter from '@/data/scatter-3.json';
 // import { getScatterData } from '@/api/overview.js'
 
 const radio = ref('A')
@@ -54,6 +56,10 @@ const options = [
     label: 'MDS',
   }
 ]
+
+function handleChange(newValue) {
+  eventBus.emit('select监听', { data: newValue });
+}
 
 let scatterData = ref(0);
 onMounted(() => {
@@ -84,16 +90,17 @@ watch(scatterData, () => {
 <style>
 @import url('@/assets/style/MyCard.scss');
 
-.el-card__header{
+.el-card__header {
   display: flex;
 }
+
 .overview-card {
   margin-top: 0px;
   margin-left: 0px;
 }
 
 #OverviewMain {
-  height: 335px;
+  height: 361px;
 }
 
 .button-group {
@@ -114,6 +121,7 @@ watch(scatterData, () => {
 .select {
   margin-left: 10px;
 }
+
 .select .el-input .el-input__inner {
   height: 30px;
   width: 70px;

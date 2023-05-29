@@ -54,13 +54,13 @@ export default class Parallel extends SuperGroupView {
         this.newtest = [brushPre1(newtest)]
         this.singleData = updata(singleData)
 
-        console.log('singleData', this.singleData);
-        console.log('mid', this.mid);
+        // console.log('singleData', this.singleData);
+        // console.log('mid', this.mid);
         // console.log('this.newtest', this.newtest);
-        console.log('this.brushdata', this.brushdata);
+        // console.log('this.brushdata', this.brushdata);
         // 过滤出数据里Undefine的情况
         this.brushdata = this.brushdata.filter(d => this._keys.every(e => typeof d[e] === 'number'));
-        console.log('过滤后的this.brushdata', this.brushdata);
+        // console.log('过滤后的this.brushdata', this.brushdata);
         //coolingArray nocoolingArray 0代表过冷却 1代表没过冷却
         // this._allArray = [0, 1].map(d => d3.filter(this.brushdata, (e, f) => e['status_cooling'] == d));
         // // console.log('this._allArray',this._allArray);

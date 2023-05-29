@@ -43,8 +43,8 @@ export default class ProcessView extends SuperGroupView {
     this._rawData = value;
     this._extend = extent;
     this._rScale = scale;
-    console.log('内部拿到的数据：', value)
-    console.log('内部拿到的extent：', extent)
+    // console.log('内部拿到的数据：', value)
+    // console.log('内部拿到的extent：', extent)
 
     // this._angle = computeAngle();
     // this._fillData = computeArcFillAngle(value, extent, this._angle);

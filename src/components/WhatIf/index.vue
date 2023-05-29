@@ -7,36 +7,107 @@
         </div>
       </div>
 
+      <div class="ILUS-box">
+        <el-row class="ILUS-content">
+          <el-col class="ILUS-col-content" :span="8">
+            <div class="top-box">
+              <div id="good-top">
+              </div>
+              <span class="ILUS-text">good</span>
+            </div>
+            <div class="bottom-box">
+              <div id="good-bottom">
+              </div>
+              <span class="ILUS-text"> good</span>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="top-box">
+              <div id="good-top">
+              </div>
+              <span class="ILUS-text">bad</span>
+            </div>
+            <div class="bottom-box">
+              <div id="good-bottom">
+              </div>
+              <span class="ILUS-text"> good</span>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="top-box">
+              <div id="good-top">
+              </div>
+              <span class="ILUS-text">no</span>
+            </div>
+            <div class="bottom-box">
+              <div id="good-bottom">
+              </div>
+              <span class="ILUS-text"> good</span>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+
       <div class="button-group-2">
         <el-radio-group class='switch-2' v-model="radio" fill="#455964">
           <el-radio-button label="离" />
           <el-radio-button label="连" />
         </el-radio-group>
-
-        <el-select class='select' v-model="value" placeholder="select" :popper-append-to-body="false">
-          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"
-            :disabled="item.disabled" />
-        </el-select>
         <el-button class='diagbutton'>
           <img class="diagicon" src="./diag.svg">
         </el-button>
 
         <el-dropdown :hide-on-click="false">
           <el-button>
-            Dropdown List
+            Control Pannel
             <el-icon class="el-icon--right"><arrow-down /></el-icon>
           </el-button>
           <template #dropdown>
-            <el-dropdown-menu >
-              <el-dropdown-item>1</el-dropdown-item>
-              <el-dropdown-item>2</el-dropdown-item>
-              <el-dropdown-item>3</el-dropdown-item>
+            <el-dropdown-menu>
+              <el-dropdown-item>
+                <div class='sliderbox'>
+                  <span class="ILUS-text">begin_time:</span>
+                  <el-slider v-model="value2" />
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div class='sliderbox'>
+                  <span class="ILUS-text">count_num:</span>
+                  <el-slider v-model="value3" />
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div class='sliderbox'>
+                  <span class="ILUS-text">ultralim_val:</span>
+                  <el-slider v-model="value4" />
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div class='sliderbox'>
+                  <span class="ILUS-text">msa_count:</span>
+                  <el-slider v-model="value5" />
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div class='sliderbox'>
+                  <span class="ILUS-text">stage_param:</span>
+                  <el-slider v-model="value6" />
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div class='sliderbox'>
+                  <el-button>
+                    <span class="ILUS-text">Horizon</span>
+                  </el-button>
+                  <el-button>
+                    <span class="ILUS-text">River</span>
+                  </el-button>
+                </div>
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-
       </div>
-
     </template>
     <div>
       <div id="WhatIfMain"></div>
@@ -53,7 +124,7 @@ import { getPlatesStatistics, getGantData, getGanttDataFromNode } from '@/api/mo
 import { WhatIfView, bilibiliView, TREND, GANTT, TEMPORAL } from './main';
 // 离线数据
 import platesStatistics from '@/data/platesStatistics.json';
-import ganttData from '@/data/ganttData.json';
+import ganttData from '@/data/ganttData-2.json';
 import batchData from '@/data/batchData.json'
 import testData from '@/data/testData2.json'
 import { Delete, Edit, Search, Share, Upload, ArrowDown } from '@element-plus/icons-vue'
@@ -74,6 +145,12 @@ const options = [
     label: 'MDS',
   }
 ]
+const value2 = ref(0)
+const value3 = ref(0)
+const value4 = ref(0)
+const value5 = ref(0)
+const value6 = ref(0)
+
 
 const store = useStore();
 const monthPickDate = computed(() => store.state.monthPickDate);
@@ -118,27 +195,6 @@ watch(plateStati, () => {
 
 // 甘特视图
 let gantData = ref(0);
-// watch(brushDate, () => {
-//   // 获取甘特图数据
-//   function convert(date){
-//     let newDate = [];
-//     newDate[0] = Number(date[2]);
-//     newDate[1] = Number(date[3]);
-//     newDate[2] = Number(date[6]);
-//     newDate[3] = Number(date[8]);
-//     newDate[4] = Number(date[9]);
-//     newDate[5] = Number(date[11]);
-//     newDate[6] = Number(date[12]);
-//     return newDate.join("");
-//   }
-//   let startDate = convert(brushDate.value[0]);
-//   let endDate = convert(brushDate.value[1]);
-
-//   console.log(startDate);
-//   console.log(endDate);
-//   getGanttDataFromNode(startDate, endDate)
-//     .then(res => gantData.value = res.data);
-// })
 setTimeout(() => {
   // console.log("我运行了吗?");
   gantData.value = ganttData;
@@ -160,6 +216,7 @@ watch(time, () => {
 
 <style>
 @import url('@/assets/style/MyCard.scss');
+@import url('https://fonts.googlefonts.cn/css?family=Lato:600');
 
 .whatif-card {
   margin-left: 0px;
@@ -187,10 +244,58 @@ watch(time, () => {
   margin-left: 0px;
 }
 
+.ILUS-box {
+  width: 30%;
+  height: 35px;
+}
+
+.ILUS-content {
+  height: 100%;
+}
+
+.ILUS-col-content {
+  height: 100%;
+}
+
+.ILUS-text {
+  font-family: 'Lato', sans-serif;
+  font-size: 14px;
+}
+
+.top-box {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  width: 100%;
+  height: 50%;
+}
+
+.bottom-box {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  width: 100%;
+  height: 50%;
+}
+
+#good-top {
+  margin-right: 5%;
+  width: 20%;
+  height: 50%;
+  background-color: #455964;
+}
+
+#good-bottom {
+  margin-right: 5%;
+  width: 20%;
+  height: 50%;
+  background-color: #455964;
+}
+
 .button-group-2 {
   display: flex;
   align-items: center;
-  width: 600px;
+  width: 30%;
   height: 35px;
 }
 
@@ -254,13 +359,39 @@ watch(time, () => {
   color: #455964;
 }
 
-.el-dropdown-menu .el-dropdown-menu__item:hover{
+.el-dropdown-menu .el-dropdown-menu__item:hover {
   color: #455964;
   background-color: #f5f7fa;
 }
 
-/* .el-dropdown-menu:hover {
-  max-height: 200px;
-  background-color: yellow;
+.sliderbox {
+  width: 170px;
+}
+
+/* .el-slider {
+  width: 115px;
+  padding-left: 15px;
 } */
+
+.el-slider__bar {
+  background: #797979;
+}
+
+.el-slider__button {
+  background: white;
+  border-color: #6d7885;
+  width: 16px;
+  height: 16px;
+}
+
+.el-slider__bar {
+  background: #797979;
+}
+
+.el-slider__button {
+  background: white;
+  border-color: #6d7885;
+  width: 16px;
+  height: 16px;
+}
 </style>

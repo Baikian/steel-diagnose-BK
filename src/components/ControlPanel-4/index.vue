@@ -94,7 +94,7 @@ onMounted(() => {
 
 #timepicker {
   font-family: 'Lato', sans-serif;
-  font-weight: 300;
+  font-weight: 100;
   font-size: 15px;
   display: flex;
   align-items: center;

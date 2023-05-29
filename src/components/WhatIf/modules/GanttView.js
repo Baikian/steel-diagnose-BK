@@ -63,18 +63,20 @@ export default class GanttView extends SuperGroupView {
   // 添加原始数据，并转换为绘图数据
   //传进来的是 GANTT  和接口取到的数据
   joinData(key, value) {
-    // console.log('value', value);
+    console.log('value', value);
     this._rawData = value;
     this._rawData.sort((a, b) => {
       let ta = new Date(a.startTime).getTime();
       let tb = new Date(b.startTime).getTime();
       return ta - tb;
     });
+
     let result = allInfoData(this._rawData);
+    console.log('result', result);
+
     //每个规格的信息，包含起止时间，批次号，板坯号，详细upid，规格平均长宽高等
     this._infoData = result.data;
-
-    console.log('result', result);
+    
     //所有规格的长宽高范围
     this._infoExtent = result.extent;
 

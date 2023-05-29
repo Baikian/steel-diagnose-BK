@@ -5,6 +5,7 @@ import {
   GillSans,   // 字体
   SegoeUI,
 } from '@/utils';
+import { eventBus } from '@/utils';
 
 import {
   infoTarget,
@@ -42,9 +43,9 @@ export default class InfoView extends SuperGroupView {
   joinData(value, yieldGroup, extent) {
     this._rawData = value;
     this._yieldGroup = yieldGroup;
-    // console.log('this._rawData', this._rawData);
-    // console.log('this._yieldGroup', this._yieldGroup);
     this._extent = extent;
+    console.log('this._rawData', this._rawData);
+    // console.log('this._yieldGroup', this._yieldGroup);
     return this;
   }
 
@@ -61,6 +62,7 @@ export default class InfoView extends SuperGroupView {
   }
 
   #renderBackground() {
+    const that = this;
 
     //求好、坏、无标签的最大值
     const g_b_n = {
@@ -79,6 +81,8 @@ export default class InfoView extends SuperGroupView {
       }
     }
     this._maxKey = maxKey;
+
+
     //框
     this._container.append('rect')
       .attr('width', this._viewWidth)
@@ -87,6 +91,17 @@ export default class InfoView extends SuperGroupView {
       .attr('stroke', this._color[this._maxKey])
       .attr('stroke-width', 2)
       .attr('fill', 'white')
+      .on('click', function (event, d) {
+        let cids = that._rawData.cids.map(d => `${d.bid}-${d.cid}`)
+        const cateInfo = {
+          category: that._rawData.category,
+          cids: cids,
+          startTime: that._rawData.startTime,
+          endTime: that._rawData.endTime,
+          tgtthickness: 0
+        }
+        eventBus.emit('发往Overview', { data: cateInfo });
+      })
 
     this._container.append('rect')
       .attr('width', 12)
@@ -108,7 +123,6 @@ export default class InfoView extends SuperGroupView {
           else
             newId.push(this._rawData.id[i]);
         }
-        // console.log('newId', newId);
         return newId.join("");
         // return 333;
       })
@@ -219,8 +233,7 @@ export default class InfoView extends SuperGroupView {
     const Y1 = 2 * curX * (-initH - prevH - curH / 2) / this._width / 2;
     const gatherH = this._yieldGroup.scaleH(this._rawData.sumNum);
     const biasW = this._yieldGroup.scaleW(this._rawData.detail.length);
-    const biasH = biasW * (-initH - gatherH)/(90 - this._width/2 - biasW/2);
-    console.log('gatherH', biasW);
+    const biasH = biasW * (-initH - gatherH) / (90 - this._width / 2 - biasW / 2)
 
     let gatherData = [
       { x: 90, y0: initH, y1: initH + gatherH },
@@ -228,8 +241,8 @@ export default class InfoView extends SuperGroupView {
     ];
 
     let linkData = [
-      { x: this._width / 2 - biasW/2, y0: -1, y1: -1 },
-      { x: this._width / 2 + biasW/2, y0: -1 - biasH, y1:  -1 },
+      { x: this._width / 2 - biasW / 2, y0: -1, y1: -1 },
+      { x: this._width / 2 + biasW / 2, y0: -1 - biasH, y1: -1 },
       { x: 90, y0: initH + gatherH - biasH, y1: initH + gatherH }
     ];
 
