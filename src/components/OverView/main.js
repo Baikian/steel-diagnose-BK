@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import { SuperSVGView, curry } from '@/utils';
+import { eventBus } from '@/utils';
 import { detailsExtent } from './modules/utils';
 import ScatterPoint from './modules/ScatterPoint';
 import ProcessView from './modules/ProcessView';
@@ -11,13 +12,13 @@ export function getTooltipInstance(instance) {
 }
 
 export class OverView extends SuperSVGView {
-  constructor ({ width, height }, ele) {
+  constructor({ width, height }, ele) {
     super({ width, height }, ele);
 
     this._container.attr('id', 'over-view');
     this._grandpaNode = ele.parentNode.parentNode;
     this._ele = d3.select(ele);
-    
+
     this._margin = { top: 10, bottom: 10, left: 10, right: 10 };
     this._rawData = [];     // 原始数据
     this._paintData = {};   // 散点图数据映射
@@ -34,13 +35,11 @@ export class OverView extends SuperSVGView {
     this._rawData = value.filter(d => d.x !== undefined);
     this._rawData.sort((a, b) => (a.good + a.bad + a.no) - (b.good + b.bad + b.no));
     this._rawData.forEach(d => {
-      const id = `${d.bat_index}-${d.cat_index}`;
+      const id = `${d.bid}-${d.cid}`;
       this._idList.push(id);
       this._paintData[id] = d;
     });
     this._processExtent = detailsExtent(this._rawData);
-    // console.log(this._processExtent)
-    //console.log(this._rawData)
 
     const xList = this._rawData.map(d => d.x ? d.x : 0);
     const yList = this._rawData.map(d => d.y ? d.y : 0);
@@ -69,118 +68,124 @@ export class OverView extends SuperSVGView {
         exit => this.#exitHandle(exit)
       )
 
+    eventBus.on('发往Overview', (d) => {
+
+      let curData = d.data;
+      console.log('发来的数据对吗', curData);
+      this.#unfoucs(curData.cids);
+
+    })
+
     return this;
   }
 
   #enterHandle(group) {
     const that = this;
 
-    const grandepaNode = d3.select(that._grandpaNode);
-
-    grandepaNode.select('#tSNE')
-    .on('click', tSNEScatter)
-
-    grandepaNode.select('#PCA')
-    .on('click', PCAScatter)
-
-    grandepaNode.select('#MDS')
-    .on('click', MDSScatter)
-
     const scatterGroup = group.append('g')
       .attr('class', 'scatterGroup')
+      .attr('opacity', 1)
       .attr('transform', id => {
         const datum = that._paintData[id];
         const x = that._scaleX(datum.x);
         const y = that._scaleY(datum.y);
         return `translate(${[x, y]})`;
       })
-      .attr('custom--handle', function(id) {
+      .attr('custom--handle', function (id) {
         const datum = that._paintData[id];
-        // const r = that._scaleR(datum.good + datum.bad + datum.no);
         const r = 25;
-        const instance = new ScatterPoint({width: r, height: r}, d3.select(this), id);
-        instance.joinData(datum, that._scaleR).render();
+        const instance = new ScatterPoint({ width: r, height: r }, d3.select(this), id);
+        instance.joinData(datum).render();
         that._pointMap.set(id, instance);
       })
-    
+
     scatterGroup
       .on('mouseenter', (e, d) => this.#mouseenterHandle(e, d))
       .on('mouseleave', (e, d) => this.#mouseleaveHandle(e, d))
 
-    //切换tSNE
-    function tSNEScatter(){
-      const xList = that._rawData.map(d => d.x ? d.x : 0);
-      const yList = that._rawData.map(d => d.y ? d.y : 0);
-      const xDomain = d3.extent(xList);
-      const yDomain = d3.extent(yList);
-      const xRange = [that._margin.left + 25, that._viewWidth - that._margin.right - 25];
-      const yRange = [that._margin.top + 25, that._viewHeight - that._margin.bottom - 25];
-      const tSNEscaleX = d3.scaleLinear(xDomain, xRange);
-      const tSNEscaleY = d3.scaleLinear(yDomain, yRange);
+    eventBus.on('select监听', (d) => {
+      let curData = d.data;
+      console.log('curData', curData);
+      if (curData == 'Option1') {
+        const xList = that._rawData.map(d => d.x ? d.x : 0);
+        const yList = that._rawData.map(d => d.y ? d.y : 0);
+        const xDomain = d3.extent(xList);
+        const yDomain = d3.extent(yList);
+        const xRange = [that._margin.left + 25, that._viewWidth - that._margin.right - 25];
+        const yRange = [that._margin.top + 25, that._viewHeight - that._margin.bottom - 25];
+        const tSNEscaleX = d3.scaleLinear(xDomain, xRange);
+        const tSNEscaleY = d3.scaleLinear(yDomain, yRange);
 
-      that._container.selectAll('.scatterGroup')
-      .transition()
-      .duration(1000)
-      .attr('transform', id => {
-        const datum = that._paintData[id];
-        const x = tSNEscaleX(datum.x);
-        const y = tSNEscaleY(datum.y);
-        return `translate(${[x, y]})`;
-      })
-    }
+        that._container.selectAll('.scatterGroup')
+          .transition()
+          .duration(1000)
+          .attr('transform', id => {
+            const datum = that._paintData[id];
+            const x = tSNEscaleX(datum.x);
+            const y = tSNEscaleY(datum.y);
+            return `translate(${[x, y]})`;
+          })
+      }
+      else if (curData == 'Option2') {
+        const xList = that._rawData.map(d => d.pca_x ? d.pca_x : 0);
+        const yList = that._rawData.map(d => d.pca_y ? d.pca_y : 0);
+        const xDomain = d3.extent(xList);
+        const yDomain = d3.extent(yList);
+        const xRange = [that._margin.left + 25, that._viewWidth - that._margin.right - 25];
+        const yRange = [that._margin.top + 25, that._viewHeight - that._margin.bottom - 25];
+        const tSNEscaleX = d3.scaleLinear(xDomain, xRange);
+        const tSNEscaleY = d3.scaleLinear(yDomain, yRange);
 
-    //切换PCA
-    function PCAScatter(){
+        that._container.selectAll('.scatterGroup')
+          .transition()
+          .duration(1000)
+          .attr('transform', id => {
+            const datum = that._paintData[id];
+            const x = tSNEscaleX(datum.pca_x);
+            const y = tSNEscaleY(datum.pca_y);
+            return `translate(${[x, y]})`;
+          })
+      } else {
+        const xList = that._rawData.map(d => d.MDS_x ? d.MDS_x : 0);
+        const yList = that._rawData.map(d => d.MDS_y ? d.MDS_y : 0);
+        const xDomain = d3.extent(xList);
+        const yDomain = d3.extent(yList);
+        const xRange = [that._margin.left + 25, that._viewWidth - that._margin.right - 25];
+        const yRange = [that._margin.top + 25, that._viewHeight - that._margin.bottom - 25];
+        const tSNEscaleX = d3.scaleLinear(xDomain, xRange);
+        const tSNEscaleY = d3.scaleLinear(yDomain, yRange);
 
-      const xList = that._rawData.map(d => d.pca_x ? d.pca_x : 0);
-      const yList = that._rawData.map(d => d.pca_y ? d.pca_y : 0);
-      const xDomain = d3.extent(xList);
-      const yDomain = d3.extent(yList);
-      const xRange = [that._margin.left + 25, that._viewWidth - that._margin.right - 25];
-      const yRange = [that._margin.top + 25, that._viewHeight - that._margin.bottom - 25];
-      const tSNEscaleX = d3.scaleLinear(xDomain, xRange);
-      const tSNEscaleY = d3.scaleLinear(yDomain, yRange);
+        that._container.selectAll('.scatterGroup')
+          .transition()
+          .duration(1000)
+          .attr('transform', id => {
+            const datum = that._paintData[id];
+            const x = tSNEscaleX(datum.MDS_x);
+            const y = tSNEscaleY(datum.MDS_y);
+            return `translate(${[x, y]})`;
+          })
+      }
 
-      that._container.selectAll('.scatterGroup')
-      .transition()
-      .duration(1000)
-      .attr('transform', id => {
-        const datum = that._paintData[id];
-        const x = tSNEscaleX(datum.pca_x);
-        const y = tSNEscaleY(datum.pca_y);
-        return `translate(${[x, y]})`;
-      })
-    }
-
-    //切换MDS
-    function MDSScatter(){
-      const xList = that._rawData.map(d => d.MDS_x ? d.MDS_x : 0);
-      const yList = that._rawData.map(d => d.MDS_y ? d.MDS_y : 0);
-      const xDomain = d3.extent(xList);
-      const yDomain = d3.extent(yList);
-      const xRange = [that._margin.left + 25, that._viewWidth - that._margin.right - 25];
-      const yRange = [that._margin.top + 25, that._viewHeight - that._margin.bottom - 25];
-      const tSNEscaleX = d3.scaleLinear(xDomain, xRange);
-      const tSNEscaleY = d3.scaleLinear(yDomain, yRange);
-
-      that._container.selectAll('.scatterGroup')
-      .transition()
-      .duration(1000)
-      .attr('transform', id => {
-        const datum = that._paintData[id];
-        const x = tSNEscaleX(datum.MDS_x);
-        const y = tSNEscaleY(datum.MDS_y);
-        return `translate(${[x, y]})`;
-      })
-    }
+    })
   }
 
   #updateHandle(group) {
-
+  }
+  #exitHandle(group) {
   }
 
-  #exitHandle(group) {
-
+  #unfoucs(cidarray) {
+    this._container.selectAll('.scatterGroup')
+      .transition()
+      .duration(100)
+      .attr('opacity', id => {
+        for (let index in cidarray) {
+          if (id === cidarray[index]) {
+            return 1
+          }
+        }
+        return 0.1
+      })
   }
 
   #mouseenterHandle(event, id) {
@@ -197,7 +202,7 @@ export class OverView extends SuperSVGView {
     })
 
     function paintContent(data, extent, group) {
-      const instance = new ProcessView({ width: contentWidth * 2, height: contentWidth}, group, `${id}-content`);
+      const instance = new ProcessView({ width: contentWidth * 2, height: contentWidth }, group, `${id}-content`);
       instance.joinData(data, extent, that._scaleR).render();
     }
   }
